@@ -36,8 +36,6 @@ public class MainActivity extends Activity {
             w.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         }
-        applyIconColors();
-
         web = new WebView(this);
         web.setBackgroundColor(Color.TRANSPARENT);
         web.addJavascriptInterface(new Bridge(), "TasrifApp");
@@ -67,6 +65,7 @@ public class MainActivity extends Activity {
             return v.onApplyWindowInsets(ins);
         });
         setContentView(web);
+        applyIconColors();
         if (b != null) web.restoreState(b); else web.loadUrl(URL);
     }
 

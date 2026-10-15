@@ -1,7 +1,7 @@
 name: Emulator test
 on:
   push:
-    paths: [".github/workflows/test.yml", "android/test-trigger"]
+    paths: [".github/workflows/test.yml", "android/**"]
   workflow_dispatch:
 permissions:
   contents: write
@@ -42,9 +42,5 @@ jobs:
         run: |
           mkdir -p /tmp/r && cp out.txt /tmp/r/out-${{ matrix.api }}.txt || true; cp shot.png /tmp/r/shot-${{ matrix.api }}.png || true
           git config user.name ci; git config user.email ci@example.com
-          for i in 1 2 3 4 5; do
-            git fetch origin ci-logs && git checkout -B ci-logs origin/ci-logs || git checkout --orphan ci-logs-new
-            git rm -rq --cached . 2>/dev/null || true
-            cp /tmp/r/* . ; git add out-*.txt shot-*.png; git commit -qm "results ${{ matrix.api }} ${{ github.run_number }}" || true
-            git push origin HEAD:ci-logs && break; sleep 5
-          done
+          git checkout --orphan r && git rm -rq --cached . && cp /tmp/r/* . && git add out-*.txt shot-*.png && git commit -qm "results ${{ matrix.api }}"
+          git push -f origin HEAD:ci-logs-${{ matrix.api }}
