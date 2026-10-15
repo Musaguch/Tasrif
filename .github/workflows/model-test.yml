@@ -21,7 +21,11 @@ jobs:
           ls -la wav
       - name: Run
         working-directory: ci/model
-        run: npm install && node test.mjs || true
+        run: |
+          npm install
+          M=eventhorizon0/tarteel-ai-onnx-whisper-base-ar-quran
+          for cfg in "fp32 q4" "fp16 q4" "fp32 fp16" "fp32 fp32" "q4 q4"; do node test.mjs $M $cfg || true; done
+          node test.mjs onnx-community/whisper-base fp32 q4 || true
       - name: Publish
         if: always()
         run: |
