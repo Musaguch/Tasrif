@@ -3,6 +3,8 @@ on:
   push:
     paths: [".github/workflows/test.yml", "android/test-trigger"]
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,11 +29,22 @@ jobs:
           target: google_apis
           disable-animations: true
           script: |
-            adb install -r android/app/build/outputs/apk/release/app-release.apk
+            adb install -r android/app/build/outputs/apk/release/app-release.apk > out.txt 2>&1
             adb logcat -c
-            adb shell am start -W -n io.github.musaguch.tasrif/.MainActivity
+            adb shell am start -W -n io.github.musaguch.tasrif/.MainActivity >> out.txt 2>&1
             sleep 25
-            echo "=== PID ==="; adb shell pidof io.github.musaguch.tasrif || echo "NOT RUNNING"
-            echo "=== CRASH ==="; adb logcat -d -b crash || true
-            echo "=== LOG ==="; adb logcat -d | grep -iE "tasrif|AndroidRuntime|chromium|FATAL" | tail -80 || true
-            adb exec-out screencap -p > shot.png; echo "=== SHOT ==="; base64 -w0 shot.png; echo; echo "=== END ==="
+            echo "=== PID ===" >> out.txt; (adb shell pidof io.github.musaguch.tasrif || echo "NOT RUNNING") >> out.txt
+            echo "=== CRASH ===" >> out.txt; adb logcat -d -b crash >> out.txt 2>&1 || true
+            echo "=== LOG ===" >> out.txt; (adb logcat -d | grep -iE "tasrif|AndroidRuntime|FATAL|chromium" | tail -120) >> out.txt 2>&1 || true
+            adb exec-out screencap -p > shot.png
+      - name: Publish results
+        if: always()
+        run: |
+          mkdir -p /tmp/r && cp out.txt /tmp/r/out-${{ matrix.api }}.txt || true; cp shot.png /tmp/r/shot-${{ matrix.api }}.png || true
+          git config user.name ci; git config user.email ci@example.com
+          for i in 1 2 3 4 5; do
+            git fetch origin ci-logs && git checkout -B ci-logs origin/ci-logs || git checkout --orphan ci-logs-new
+            git rm -rq --cached . 2>/dev/null || true
+            cp /tmp/r/* . ; git add out-*.txt shot-*.png; git commit -qm "results ${{ matrix.api }} ${{ github.run_number }}" || true
+            git push origin HEAD:ci-logs && break; sleep 5
+          done
