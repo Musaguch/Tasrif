@@ -1,0 +1,124 @@
+Performing Streamed Install
+Success
+Starting: Intent { cmp=io.github.musaguch.tasrif/.MainActivity }
+Status: ok
+LaunchState: UNKNOWN (0)
+Activity: io.github.musaguch.tasrif/.MainActivity
+WaitTime: 734
+Complete
+=== PID ===
+NOT RUNNING
+=== CRASH ===
+--------- beginning of crash
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: FATAL EXCEPTION: main
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: Process: io.github.musaguch.tasrif, PID: 1883
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4048)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4235)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:112)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:174)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:109)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:81)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2636)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:317)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at com.android.internal.policy.PhoneWindow.getInsetsController(PhoneWindow.java:4092)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.applyIconColors(MainActivity.java:83)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.onCreate(MainActivity.java:39)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9002)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:8980)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1526)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4030)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	... 13 more
+=== LOG ===
+10-15 02:47:06.974   553  1247 V SplashScreenExceptionList: SplashScreen checking exception for package io.github.musaguch.tasrif (target sdk:35) -> false
+10-15 02:47:07.043   553  1247 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.musaguch.tasrif/.MainActivity} with LAUNCH_MULTIPLE from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-15 02:47:07.155   553   997 D CoreBackPreview: Window{8a27542 u0 Splash Screen io.github.musaguch.tasrif}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@a85ae4a, mPriority=0, mIsAnimationCallback=false}
+10-15 02:47:07.264  1883  1883 I musaguch.tasrif: Using CollectorTypeCMC GC.
+10-15 02:47:07.265  1883  1883 W musaguch.tasrif: Unexpected CPU variant for x86: x86_64.
+10-15 02:47:07.265  1883  1883 W musaguch.tasrif: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+10-15 02:47:07.266  1883  1883 E musaguch.tasrif: Not starting debugger since process cannot load the jdwp agent.
+10-15 02:47:07.271   553   589 I ActivityManager: Start proc 1883:io.github.musaguch.tasrif/u0a209 for next-top-activity {io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}
+10-15 02:47:07.328  1883  1883 D nativeloader: Configuring clns-7 for other apk /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.musaguch.tasrif
+10-15 02:47:07.558   553   579 I AppsFilter: interaction: PackageSetting{19da5b5 com.android.microdroid.empty_payload/10201} -> PackageSetting{79ae44a io.github.musaguch.tasrif/10209} BLOCKED
+10-15 02:47:07.594   553   576 V WindowManager:         {WCT{RemoteToken{2dcf3fa Task{8a4d3b6 #8 type=standard A=10209:io.github.musaguch.tasrif}}} m=OPEN f=MOVE_TO_TOP leash=Surface(name=Task=8)/@0x3de56ee sb=Rect(0, 0 - 320, 640) eb=Rect(0, 0 - 320, 640) d=0 taskParent=-1},
+10-15 02:47:07.645  1883  1883 E TransactionExecutor: tId:380474408     LaunchActivityItem{activityToken=android.os.BinderProxy@61821f1,intent=Intent { flg=0x10000000 cmp=io.github.musaguch.tasrif/.MainActivity },ident=91054432,info=ActivityInfo{ceb85ae io.github.musaguch.tasrif.MainActivity},curConfig={1.0 310mcc260mnc [en_US] ldltr sw320dp w320dp h640dp 160dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 320, 640) mAppBounds=Rect(0, 0 - 320, 640) mMaxBounds=Rect(0, 0 - 320, 640) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.20 fontWeightAdjustment=0},overrideConfig={1.0 310mcc260mnc [en_US] ldltr sw320dp w320dp h640dp 160dpi nrml long port finger qwerty/v/v -nav/h winConfig={ mBounds=Rect(0, 0 - 320, 640) mAppBounds=Rect(0, 0 - 320, 640) mMaxBounds=Rect(0, 0 - 320, 640) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.4 fontWeightAdjustment=0},deviceId=0,referrer=com.android.shell,procState=19,state=null,persistentState=null,pendingResults=null,pendingNewIntents=null,sceneTransitionInfo=null,profilerInfo=null,assistToken=android.os.BinderProxy@13d06f3,shareableActivityToken=android.os.BinderProxy@20c2fb0,activityWindowInfo=ActivityWindowInfo{isEmbedded=false, taskBounds=Rect(0, 0 - 320, 640), taskFragmentBounds=Rect(0, 0 - 320, 640)}}
+10-15 02:47:07.645  1883  1883 E TransactionExecutor: tId:380474408     Target activity: io.github.musaguch.tasrif.MainActivity
+10-15 02:47:07.645  1883  1883 D AndroidRuntime: Shutting down VM
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: FATAL EXCEPTION: main
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: Process: io.github.musaguch.tasrif, PID: 1883
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4048)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4235)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:112)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeNonLifecycleItem(TransactionExecutor.java:174)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeTransactionItems(TransactionExecutor.java:109)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:81)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2636)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:317)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at com.android.internal.policy.PhoneWindow.getInsetsController(PhoneWindow.java:4092)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.applyIconColors(MainActivity.java:83)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.onCreate(MainActivity.java:39)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:9002)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:8980)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1526)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4030)
+10-15 02:47:07.650  1883  1883 E AndroidRuntime: 	... 13 more
+10-15 02:47:07.653   553   578 E AppHibernationService: Package io.github.musaguch.tasrif is not installed for user 0
+10-15 02:47:07.653   553   578 E AppHibernationService: Package io.github.musaguch.tasrif is not installed for any user
+10-15 02:47:07.653   553   578 E AppHibernationService: Package io.github.musaguch.tasrif is not installed for user 0
+10-15 02:47:07.653   553   578 E AppHibernationService: Package io.github.musaguch.tasrif is not installed for any user
+10-15 02:47:07.655   553  1555 W ActivityTaskManager:   Force finishing activity io.github.musaguch.tasrif/.MainActivity
+10-15 02:47:07.670   553  1565 I ActivityManager: Process io.github.musaguch.tasrif (pid 1883) has died: fg  TOP 
+10-15 02:47:07.826  1158  1158 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=8, baseIntent=Intent { flg=0x10000000 cmp=io.github.musaguch.tasrif/.MainActivity }
+10-15 02:47:08.123  1323  1976 W chromium: [1015/024708.122428:WARNING:dns_config_service_android.cc(81)] Failed to read DnsConfig.
+10-15 02:47:08.534  1214  1836 W .gms.persistent: Verification of org.chromium.net.ExperimentalCronetEngine org.chromium.net.impl.NativeCronetEngineBuilderImpl.build() took 376.180ms (66.46 bytecodes/s) (2856B approximate peak alloc)
+10-15 02:47:08.816   553   855 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package io.github.musaguch.tasrif isStopped false
+10-15 02:47:08.845   553   882 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10209, mPackageName='io.github.musaguch.tasrif, mAppProcessToken='null'}
+10-15 02:47:09.090   553   576 V WindowManager:         {WCT{RemoteToken{2dcf3fa Task{8a4d3b6 #8 type=standard A=10209:io.github.musaguch.tasrif}}} m=CLOSE f=NONE leash=Surface(name=Task=8)/@0x3de56ee sb=Rect(0, 0 - 320, 640) eb=Rect(0, 0 - 320, 640) d=0 taskParent=-1},
+10-15 02:47:09.248  1158  1196 I Launcher.IconCache: Database bulk icon loading failed, using fallback bulk icon loading for: ComponentInfo{io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}
+10-15 02:47:09.248   553   567 W system_server: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk' with 1 weak references
+10-15 02:47:09.402   553  1561 W InputManager-JNI: Input channel object '8a27542 Splash Screen io.github.musaguch.tasrif (client)' was disposed without first being removed with the input manager!
+10-15 02:47:09.601   553   553 I AppsFilter: interaction: PackageSetting{19da5b5 com.android.microdroid.empty_payload/10201} -> PackageSetting{79ae44a io.github.musaguch.tasrif/10209} BLOCKED
+10-15 02:47:10.256  1214  2108 W chromium: [1015/024710.242639:WARNING:dns_config_service_android.cc(81)] Failed to read DnsConfig.
+10-15 02:47:10.788  1214  2049 W FontLog : 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@242335041@24.23.35 (190800-0):4)
+10-15 02:47:10.835   553   869 D ShortcutService: adding package: io.github.musaguch.tasrif userId0
+10-15 02:47:10.835   553   869 D ShortcutService: handlePackageAdded: io.github.musaguch.tasrif user=0
+10-15 02:47:10.835   553   869 D ShortcutService: rescanPackageIfNeeded 0@io.github.musaguch.tasrif, forceRescan=true , isNewApp=true
+10-15 02:47:10.835   553   869 D ShortcutService: Package io.github.musaguch.tasrif has 0 manifest shortcut(s), and 0 share target(s)
+10-15 02:47:10.835   553   869 D ShortcutService: changing package: io.github.musaguch.tasrif userId0
+10-15 02:47:10.835   553   869 D ShortcutService: handlePackageChanged: io.github.musaguch.tasrif user=0
+10-15 02:47:10.835   553   869 D ShortcutService: rescanPackageIfNeeded 0@io.github.musaguch.tasrif, forceRescan=true , isNewApp=true
+10-15 02:47:10.835   553   869 D ShortcutService: Package io.github.musaguch.tasrif has 0 manifest shortcut(s), and 0 share target(s)
+10-15 02:47:11.061  1085  1085 D CarrierSvcBindHelper: onPackageAdded: io.github.musaguch.tasrif
+10-15 02:47:11.086  1085  1297 D ImsResolver: maybeAddedImsService, packageName: io.github.musaguch.tasrif
+10-15 02:47:11.096  1085  1085 D CarrierSvcBindHelper: onPackageModified: io.github.musaguch.tasrif
+10-15 02:47:11.108  1158  1196 D PackageUpdatedTask: Package updated: mOp=ADD packages=[io.github.musaguch.tasrif]
+10-15 02:47:11.203  1085  1297 D ImsResolver: maybeAddedImsService, packageName: io.github.musaguch.tasrif
+10-15 02:47:11.298  1158  1196 D SessionCommitReceiver: Removing PromiseIcon for package: io.github.musaguch.tasrif, install reason: 0, alreadyAddedPromiseIcon: false
+10-15 02:47:11.655  1158  1168 W s.nexuslauncher: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk' with 1 weak references
+10-15 02:47:11.782   907   915 W ndroid.systemui: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk' with 1 weak references
+10-15 02:47:11.866  1438  1438 I AiAiEcho: AppFetcherImpl onPackageChanged io.github.musaguch.tasrif.
+10-15 02:47:11.866  1438  2116 I AiAiEcho: AppIndexer Package:[io.github.musaguch.tasrif] UserProfile:[0] Enabled:[true].
+10-15 02:47:11.868  1438  2116 I AiAiEcho: AppFetcherImplV2 updateApps package:[io.github.musaguch.tasrif], userId:[0], reason:[package is updated.].
+10-15 02:47:11.876  1158  1196 D PackageUpdatedTask: Package updated: mOp=UPDATE packages=[io.github.musaguch.tasrif]
+10-15 02:47:13.918   919   919 I SafetyLabelChangedBroadcastReceiver: received broadcast packageName: io.github.musaguch.tasrif, current user: UserHandle{0}, packageChangeEvent: NEW_INSTALL, intent user: UserHandle{0}
+10-15 02:47:17.846  1530  2580 W chromium: [1015/024717.845047:WARNING:url_request_context_config.cc(716)] Unrecognized Cronet experimental option "enable_telemetry" with params "false
+10-15 02:47:17.846  1530  2580 W chromium: 
+10-15 02:47:21.850  2698  2727 D nativeloader: Load /data/app/~~kym8_HYePKNqQmaocx3Pfw==/com.android.chrome-2wXGBFw6RG_nQo00B-h-SA==/Chrome.apk!/lib/x86_64/libchromium_android_linker.so using ns clns-8 from class loader (caller=/data/app/~~kym8_HYePKNqQmaocx3Pfw==/com.android.chrome-2wXGBFw6RG_nQo00B-h-SA==/Chrome.apk): ok
+10-15 02:47:22.974  1612  1619 W gle.android.gms: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk' with 1 weak references
+10-15 02:47:22.976  1158  1168 W s.nexuslauncher: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk' with 1 weak references
+10-15 02:47:28.139  1612  1619 W gle.android.gms: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~9Rv8iSyoygKE0sRs1Chxug==/io.github.musaguch.tasrif-qnkSCW5uOV4Yb8z-IvUP3g==/base.apk' with 1 weak references
