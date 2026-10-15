@@ -1,0 +1,1 @@
+{"name":"model-test","private":true,"type":"module","dependencies":{"@huggingface/transformers":"3.7.6","wavefile":"11.0.0"}}

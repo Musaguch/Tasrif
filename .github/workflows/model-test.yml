@@ -1,0 +1,31 @@
+name: Voice model test
+on:
+  push:
+    paths: [".github/workflows/model-test.yml", "ci/model/**"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: sudo apt-get update && sudo apt-get install -y espeak-ng
+      - name: Make audio
+        working-directory: ci/model
+        run: |
+          mkdir -p wav
+          i=0; for w in "كَتَبَ" "يَنْصُرُونَ" "اُكْتُبْ" "مَكْتُوبٌ" "اِسْتَغْفَرَ" "قَالَ يَقُولُ قَوْلًا"; do i=$((i+1)); espeak-ng -v ar -s 120 -w wav/$i.wav "$w"; done
+          ls -la wav
+      - name: Run
+        working-directory: ci/model
+        run: npm install && node test.mjs || true
+      - name: Publish
+        if: always()
+        run: |
+          mkdir -p /tmp/r && cp ci/model/model-out.txt /tmp/r/ || echo "no output" > /tmp/r/model-out.txt
+          git config user.name ci; git config user.email ci@example.com
+          git checkout --orphan r && git rm -rq --cached . && cp /tmp/r/* . && git add model-out.txt && git commit -qm "model test"
+          git push -f origin HEAD:ci-model
