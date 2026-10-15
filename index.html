@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}body::before{content:"";position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--bg,#eef2f0);z-index:50;pointer-events:none}</style>
+<style>:root{padding-top:max(env(safe-area-inset-top,0px),var(--sat,0px));padding-bottom:max(env(safe-area-inset-bottom,0px),var(--sab,0px));color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}body::before{content:"";position:fixed;top:0;left:0;right:0;height:max(env(safe-area-inset-top,0px),var(--sat,0px));background:var(--bg,#eef2f0);z-index:50;pointer-events:none}</style>
 <title>Тасриф аль-Иззи</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,7 +47,7 @@ button{font:inherit;color:inherit}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ar{font-family:var(--f-ar);direction:rtl;unicode-bidi:isolate}
 .rtl{direction:rtl;text-align:right;font-family:var(--f-ar)}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 10px;display:flex;flex-direction:column;gap:10px}
+header.top{position:sticky;top:max(env(safe-area-inset-top,0px),var(--sat,0px));z-index:5;background:var(--bg);padding-block:14px 10px;display:flex;flex-direction:column;gap:10px}
 .brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 .brand h1{margin:0;font-size:1.15rem;font-weight:700;letter-spacing:-.01em}
 .brand .ar{font-size:1.5rem;color:var(--accent);line-height:1}
@@ -166,7 +166,7 @@ td.pr{width:24%;font-family:var(--f-ar);font-size:1.15rem;color:var(--muted)}
 .dbox .cell{padding:0;font-size:1.3rem}
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--surface);border-radius:18px 18px 0 0;max-height:84vh;overflow:auto;
-  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+  padding:12px max(16px,env(safe-area-inset-right,0px)) calc(20px + max(env(safe-area-inset-bottom,0px),var(--sab,0px))) max(16px,env(safe-area-inset-left,0px));box-shadow:0 -8px 30px rgba(0,0,0,.18)}
 .sheet .in{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
 .sheet-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -2199,7 +2199,11 @@ render();
 
 <script>
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.0.7";
+window.APP_VERSION="1.0.8";
+if(window.TasrifApp){
+  const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
+  rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));
+}
 </script>
 </body>
 </html>
