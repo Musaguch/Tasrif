@@ -1,4 +1,4 @@
-const VERSION="1.0.6";
+const VERSION="1.0.7";
 const CORE="tasrif-"+VERSION;
 const FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CORE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
@@ -12,8 +12,8 @@ self.addEventListener("fetch",e=>{
   }
   if(u.origin!==location.origin) return;
   if(e.request.mode==="navigate"){
-    e.respondWith(fetch(e.request).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put("./index.html",cp)); return n; }).catch(()=>caches.match("./index.html")));
+    e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put("./index.html",cp)); return n; }).catch(()=>caches.match("./index.html")));
     return;
   }
-  e.respondWith(fetch(e.request).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put(e.request,cp)); return n; }).catch(()=>caches.match(e.request)));
+  e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put(e.request,cp)); return n; }).catch(()=>caches.match(e.request)));
 });
