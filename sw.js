@@ -1,4 +1,4 @@
-const VERSION="1.0.2";
+const VERSION="1.0.3";
 const CORE="tasrif-"+VERSION;
 const FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CORE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
@@ -15,5 +15,5 @@ self.addEventListener("fetch",e=>{
     e.respondWith(fetch(e.request).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put("./index.html",cp)); return n; }).catch(()=>caches.match("./index.html")));
     return;
   }
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
+  e.respondWith(fetch(e.request).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put(e.request,cp)); return n; }).catch(()=>caches.match(e.request)));
 });
