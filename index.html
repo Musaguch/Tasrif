@@ -2069,6 +2069,7 @@ function viewStats(){
       ${S.confirmReset?`<div class="row" style="justify-content:space-between"><span>Удалить всю статистику и ошибки?</span><div class="row"><button class="btn" data-act="resetNo">Нет</button><button class="btn" style="color:var(--bad);border-color:var(--bad)" data-act="resetYes">Удалить</button></div></div>`
         :`<button class="btn btn-ghost" data-act="reset" style="color:var(--bad)">Сбросить прогресс</button>`}
       <p class="small muted" style="margin:8px 0 0">Прогресс хранится в этом браузере на этом устройстве.</p>
+      <p class="small muted" style="margin:8px 0 0">${window.APP_VERSION?'Версия '+window.APP_VERSION+' · режим: '+(['fullscreen','standalone','minimal-ui','browser'].find(m=>matchMedia('(display-mode: '+m+')').matches)||'?'):''}</p>
     </section>`;
 }
 
@@ -2198,14 +2199,7 @@ render();
 
 <script>
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.0.4";
-(function(){
-  const de=document.documentElement;
-  const req=de.requestFullscreen||de.webkitRequestFullscreen;
-  if(!req||!matchMedia("(pointer:coarse)").matches) return;
-  const fs=()=>document.fullscreenElement||document.webkitFullscreenElement;
-  document.addEventListener("pointerup",()=>{ if(!fs()){ try{ const r=req.call(de,{navigationUI:"hide"}); if(r&&r.catch) r.catch(()=>{}); }catch(e){} } },true);
-})();
+window.APP_VERSION="1.0.5";
 </script>
 </body>
 </html>
