@@ -2387,9 +2387,10 @@ function voiceCands(q){
   const P=q.P, Vb=q.Vb, st=q.spec.type, i=q.spec.i||0;
   const tryF=(t,k)=>{ try{ if(!has(P,Vb,t)) return; const f=form(P,Vb,t,k); if(f) [f.text,...(f.alts||[])].forEach(x=>add(x,false,sighaLabel(t,k))); }catch(e){} };
   if(INDEXED[st]) for(let k=0;k<INDEXED[st];k++) tryF(st,k);
-  ["madi","madiP","mud","mudP","amr","nahy","fail","maf","masdar","zarf","ala","sifa"].forEach(t=>{ if(t!==st) tryF(t, Math.min(i,(INDEXED[t]||1)-1)); });
-  mutations(q.answer).slice(0,8).forEach(m=>add(m,false,"другая огласовка"));
-  return out.slice(0,36);
+  const NEAR={madi:["madiP"],madiP:["madi"],mud:["mudP","amr"],mudP:["mud"],amr:["nahy","mud"],nahy:["amr"],fail:["maf"],maf:["fail"],masdar:["fail","maf"],zarf:["maf","masdar"],ala:["zarf"],sifa:["fail"],amrN:["amrNk","amr"],amrNk:["amrN","amr"],nahyN:["nahyNk","nahy"],nahyNk:["nahyN","nahy"]};
+  (NEAR[st]||[]).forEach(t=>tryF(t, Math.min(i,(INDEXED[t]||1)-1)));
+  mutations(q.answer).slice(0,5).forEach(m=>add(m,false,"другая огласовка"));
+  return out.slice(0,22);
 }
 async function voiceStart(){
   const s=S.ses; if(!s) return; const q=s.q, eng=S.cfg.voice, long=!!q.rows;
@@ -2703,7 +2704,7 @@ if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.s
   if(!window.crossOriginIsolated && navigator.serviceWorker.controller){ try{ if(!sessionStorage.getItem("coi")){ sessionStorage.setItem("coi","1"); location.reload(); } }catch(e){} }
   else if(!window.crossOriginIsolated) navigator.serviceWorker.addEventListener("controllerchange",()=>{ try{ if(!sessionStorage.getItem("coi")){ sessionStorage.setItem("coi","1"); location.reload(); } }catch(e){} });
 }).catch(()=>{})); }
-window.APP_VERSION="1.1.1-b4";
+window.APP_VERSION="1.1.1-b5";
 if(window.TasrifApp){
   const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
   rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));
