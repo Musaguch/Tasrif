@@ -1876,7 +1876,10 @@ const Voice = {
     const data = await this.pcm(blob);
     const inp = await processor(data);
     const r = await model.sessions.model.run({input_features: inp.input_features.ort_tensor});
-    const H = new T.Tensor(r.last_hidden_state);
+    let H = new T.Tensor(r.last_hidden_state);
+    /* keep only the frames that contain speech (50 frames per second): cross-attention cost drops ~10x */
+    const fr = Math.min(H.dims[1], Math.ceil(data.length/16000*50)+40);
+    if(this.trunc!==false && fr<H.dims[1]) H = new T.Tensor("float32", H.data.slice(0, fr*H.dims[2]), [1, fr, H.dims[2]]);
     const tid = t=>tokenizer.model.tokens_to_ids.get(t);
     const PREFIX = [tid("<|startoftranscript|>")??50258, tid("<|ar|>")??50272, tid("<|transcribe|>")??50359, tid("<|notimestamps|>")??50363];
     const EOS = tid("<|endoftext|>")??50257;
@@ -2695,7 +2698,7 @@ render();
 
 <script>
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.1.1-b2";
+window.APP_VERSION="1.1.1-b3";
 if(window.TasrifApp){
   const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
   rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));

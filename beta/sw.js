@@ -1,4 +1,4 @@
-const VERSION="1.1.1-b2";
+const VERSION="1.1.1-b3";
 const CORE="tasrifb-"+VERSION;
 const FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CORE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
