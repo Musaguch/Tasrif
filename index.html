@@ -2117,7 +2117,9 @@ function viewOral(){
 }
 function viewSummary(){
   const s=S.ses, total=s.queue.length, wr=s.log.filter(x=>!x.res.ok).length;
-  const rev = s.exam ? `<section class="panel"><h2>Разбор</h2><div class="rev">${s.log.map((x,k)=>{
+  const showRev = s.exam || s.showRev;
+  const rev = showRev ? `<section class="panel"><h2>${s.exam?"Разбор":"Разбор ошибок"}</h2><div class="rev">${s.log.map((x,k)=>{
+      if(!s.exam && x.res.ok) return "";
       const q=x.q; const open=s.open===k;
       return `<div class="rev-item ${x.res.ok?"":"no"}">
         <div class="q">${k+1}. ${esc(q.task.ar)} ${q.pair?"— "+esc(q.pair):""} ${q.askText?esc(q.askText):(q.word?"«"+esc(q.word)+"»":esc(q.ask||"")+(q.askSub?" — "+esc(q.askSub):""))}</div>
@@ -2130,6 +2132,7 @@ function viewSummary(){
       <div class="num">${s.right} / ${total}</div>
       <div class="muted">${pct(s.right,total)}% верно${s.timeout?` · отвечено ${s.log.length} из ${total}`:""}${wr?` · ${wr} в списке ошибок`:""}${s.exam&&timerNow(s)>0?` · время ${mmss(timerNow(s))}`:""}</div>
     </section>
+    ${!s.exam&&wr?`<div class="hero-cta" style="margin-bottom:0"><button class="btn btn-wide" data-act="showRev">${s.showRev?"Скрыть разбор":"Разбор · "+wr}</button></div>`:""}
     ${rev}
     <div class="hero-cta">
       ${wr?`<button class="btn btn-p btn-wide" data-act="startMist">Повторить ошибки</button>`:""}
@@ -2316,6 +2319,7 @@ document.addEventListener("click",e=>{
     case "check": { const i=document.getElementById("ans"); if(i&&i.value.trim()) answer(i.value); else if(i) i.focus(); break; }
     case "next": next(); break;
     case "ex": S.ses.showEx=!S.ses.showEx; render(); break;
+    case "showRev": S.ses.showRev=!S.ses.showRev; S.ses.open=null; S.det=null; render(); break;
     case "revEx": { const k=+b.dataset.k; S.ses.open = S.ses.open===k?null:k; S.det=null; render(); break; }
     case "lang": S.exLang = S.exLang==="ru"?"ar":"ru"; render(); renderSheet(); break;
     case "toTable": S.table={p:b.dataset.p, v:+b.dataset.v, custom:"", customErr:""}; S.tab="table"; render(); window.scrollTo({top:0}); break;
@@ -2368,7 +2372,7 @@ render();
 
 <script>
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.1.1";
+window.APP_VERSION="1.1.2";
 if(window.TasrifApp){
   const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
   rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));
