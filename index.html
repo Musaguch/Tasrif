@@ -117,6 +117,20 @@ h3.arh{font-family:var(--f-ar);font-size:1.25rem;margin:0;font-weight:700;direct
 .fb.ok{background:var(--good-bg)} .fb.no{background:var(--bad-bg)}
 .fb .h{font-weight:700;font-size:1.3rem} .fb.ok .h{color:var(--good)} .fb.no .h{color:var(--bad)}
 .fb .big2{font-size:1.6rem}
+.fb .dl{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.fb .dl small{font-family:var(--f-ui);font-size:.8rem;color:var(--muted);direction:ltr}
+.dw{font-size:1.6rem;line-height:1.5}
+.dw .d-har{color:var(--warn);background:var(--warn-bg);border-radius:4px}
+.dw .d-bad{color:var(--bad);text-decoration:underline wavy;text-decoration-thickness:1px;text-underline-offset:6px}
+.dw .d-fix{color:var(--good);font-weight:700}
+.dw .d-miss{color:var(--good);font-weight:700;text-decoration:underline;text-underline-offset:6px}
+.dhint{font-family:var(--f-ui);font-size:.8rem;color:var(--muted);direction:ltr;text-align:left}
+.oral-hint{text-align:center;color:var(--muted);font-size:.9rem;margin:4px 0 0}
+.orows{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;direction:rtl;font-family:var(--f-ar);font-size:1.25rem;line-height:1.6;background:var(--sunk);border-radius:12px;padding:12px 14px}
+.orows dt{color:var(--muted);font-size:1.05rem} .orows dd{margin:0}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grade .btn{padding-block:12px}
+.grade .g0{color:var(--bad);border-color:var(--bad)} .grade .g1{color:var(--warn);border-color:var(--warn)} .grade .g2{background:var(--good);border-color:var(--good);color:#fff}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .actions .btn{flex:1 1 auto}
 .ex{display:flex;flex-direction:column;gap:12px;border-top:1px dashed var(--line);padding-top:14px}
@@ -1356,6 +1370,7 @@ function verbPair(P,Vb){ return form(P,Vb,"madi",0).text+" "+form(P,Vb,"mud",0).
 const L = (ar,ru)=>({ar,ru});
 
 function makeQ(spec){
+  if(spec.type==="oral_ist"||spec.type==="oral_lug") return makeOralQ(spec);
   if(spec.type==="theory"){
     const T=THEORY[spec.p][spec.i];
     return {spec, fixed:true, textOpts:true, task:L("سُؤَالٌ نَظَرِيٌّ","Теория"), askText:T.q, askRu:T.ru, answer:T.o[0], alts:[], options:shuffle(T.o), ex:{steps:[T.ex].filter(s=>s.ar)}};
@@ -1681,6 +1696,85 @@ function detail(P,Vb,type,i){
   return {rows, why, rule, ex, sound, line, gloss:Vb.g};
 }
 
+/* ================= oral training ================= */
+const ORAL_KINDS = [
+  {id:"ist", ar:"التَّصْرِيفُ الِاصْطِلَاحِيُّ", ru:"Тасриф истилахи: вся линия глагола"},
+  {id:"lug", ar:"التَّصْرِيفُ اللُّغَوِيُّ", ru:"Тасриф лугави: все формы по лицам"},
+  {id:"q",   ar:"أَسْئِلَةُ الْأَنْوَاعِ الْمُخْتَارَةِ", ru:"Вопросы выбранных типов, ответ вслух"}
+];
+const LUG_TYPES = ["madi","mud","madiP","mudP","amr","nahy","fail","maf"];
+const LUG_N = {fail:6, maf:6};
+
+function oralSpec(cfg){
+  const kinds = (cfg.oral||[]).filter(k=>k!=="q" || cfg.types.length || cfg.theory.length);
+  const pats = PATS.filter(p=>cfg.pats.includes(p.id) && p.verbs.length);
+  if(!kinds.length) return null;
+  for(let n=0;n<60;n++){
+    const k = pick(kinds);
+    if(k==="q"){ const s=randomSpec(cfg); if(s) return s; continue; }
+    if(!pats.length) continue;
+    const P=pick(pats), vi=pickVerb(P), Vb=P.verbs[vi];
+    if(k==="ist") return {type:"oral_ist", p:P.id, v:vi, i:0};
+    const ts = LUG_TYPES.filter(t=>has(P,Vb,t));
+    if(!ts.length) continue;
+    return {type:"oral_lug", p:P.id, v:vi, i:0, t:pick(ts)};
+  }
+  return null;
+}
+
+function makeOralQ(spec){
+  const P=PBY[spec.p], Vb=P.verbs[spec.v];
+  const q={spec, P, Vb, pair:verbPair(P,Vb), gloss:Vb.g, oral:true};
+  const fmt = f=>[f.text,...(f.alts||[])].join("، ");
+  if(spec.type==="oral_ist"){
+    const d = detail(P,Vb,"madi",0);
+    q.task = L("صَرِّفْ هَذَا الْفِعْلَ تَصْرِيفًا اصْطِلَاحِيًّا","Произнеси тасриф истилахи этого глагола");
+    q.ask = form(P,Vb,"madi",0).text;
+    q.rows = d.line.map(([l,v])=>[l,v]);
+    q.answer = d.line.map(x=>x[1]).join(" – ");
+  } else {
+    const t = spec.t, n = LUG_N[t]||14;
+    q.task = L("صَرِّفْ تَصْرِيفًا لُغَوِيًّا","Произнеси тасриф лугави");
+    q.ask = form(P,Vb,"madi",0).text;
+    q.askSub = TYPE_AR[t];
+    q.rows = Array.from({length:n},(_,k)=>{ const f=form(P,Vb,t,k); return [{ar:(n===6?NUM_AR[k]:PRON[k]), ru:(n===6?NUM_AR[k]:PRON[k])}, f?fmt(f):"—"]; });
+    q.answer = q.rows.map(r=>r[1]).join(" – ");
+  }
+  q.alts=[]; q.fixed=true; q.options=[];
+  return q;
+}
+
+/* ================= letter-level diff ================= */
+const MARKS = /[ً-ْٰ]/;
+function clusters(s){
+  const out=[];
+  for(const ch of norm(s)){
+    if(MARKS.test(ch) && out.length && out[out.length-1].b!==" ") out[out.length-1].m.push(ch);
+    else out.push({b:ch, m:[]});
+  }
+  return out.map(c=>({b:c.b, m:c.m.slice().sort().join(""), t:c.b+c.m.join("")}));
+}
+function diffWords(user, right){
+  const a=clusters(user), b=clusters(right), n=a.length, m=b.length;
+  const sub=(x,y)=> x.b===y.b ? (x.m===y.m?0:0.5) : 1;
+  const D=Array.from({length:n+1},()=>new Float64Array(m+1));
+  for(let i=0;i<=n;i++) D[i][0]=i; for(let j=0;j<=m;j++) D[0][j]=j;
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++) D[i][j]=Math.min(D[i-1][j-1]+sub(a[i-1],b[j-1]), D[i-1][j]+1, D[i][j-1]+1);
+  const ops=[]; let i=n, j=m;
+  while(i>0||j>0){
+    if(i>0&&j>0 && D[i][j]===D[i-1][j-1]+sub(a[i-1],b[j-1])){ const c=sub(a[i-1],b[j-1]); ops.push({t:c===0?"eq":c<1?"har":"sub", a:a[i-1], b:b[j-1]}); i--; j--; }
+    else if(i>0 && D[i][j]===D[i-1][j]+1){ ops.push({t:"ins", a:a[i-1]}); i--; }
+    else { ops.push({t:"del", b:b[j-1]}); j--; }
+  }
+  ops.reverse();
+  return {ops, cost:D[n][m]};
+}
+function bestTarget(user, answers){
+  let best=null;
+  answers.forEach(r=>{ const d=diffWords(user,r); if(!best||d.cost<best.cost) best={...d, right:r}; });
+  return best;
+}
+
 
 
 /* ================= storage ================= */
@@ -1688,7 +1782,7 @@ const LS = {
   get(k,d){ try{ const v=localStorage.getItem("tasrif2."+k); return v?JSON.parse(v):d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem("tasrif2."+k, JSON.stringify(v)); }catch(e){} }
 };
-const DEF_CFG = {pats:PATS.map(p=>p.id), types:TGROUPS.map(g=>g.id), theory:THEORY_TOPICS.map(t=>t.id), mode:"choice", len:20, strict:true, mix:true, exam:false, limit:0};
+const DEF_CFG = {pats:PATS.map(p=>p.id), types:TGROUPS.map(g=>g.id), theory:THEORY_TOPICS.map(t=>t.id), mode:"choice", len:20, strict:true, mix:true, exam:false, limit:0, kind:"test", oral:["ist","lug","q"]};
 const S = {
   tab:"train",
   cfg: Object.assign({}, DEF_CFG, LS.get("cfg",{})),
@@ -1700,7 +1794,7 @@ const S = {
   table: {p:"nasara", v:0, custom:"", customErr:""},
   confirmReset:false
 };
-S.cfg.theory = S.cfg.theory||[];
+S.cfg.theory = S.cfg.theory||[]; S.cfg.kind = S.cfg.kind||"test"; S.cfg.oral = S.cfg.oral||["ist","lug","q"];
 if(!S.cfg.v3){ ["nun","zin","full"].forEach(x=>{ if(!S.cfg.types.includes(x)) S.cfg.types.push(x); }); S.cfg.v3=1; }
 RECENT = LS.get("recent",[]);
 const saveAll = ()=>{ LS.set("cfg",S.cfg); LS.set("stats",S.stats); LS.set("mist",S.mist); LS.set("recent",RECENT); };
@@ -1742,19 +1836,21 @@ function startSession(onlyMist){
   if(onlyMist) ms.slice(0,n).forEach(pushS);
   else {
     if(cfg.mix && !cfg.exam) ms.slice(0,Math.floor(n*0.25)).forEach(pushS);
-    let guard=0; while(queue.length<n && guard++<n*40){ const s=randomSpec(cfg); if(s){ pushS(s); if(s.p&&s.v!=null) noteRecent(s); } }
+    const gen = cfg.kind==="oral" ? ()=>oralSpec(cfg) : ()=>randomSpec(cfg);
+    let guard=0; while(queue.length<n && guard++<n*40){ const s=gen(); if(s){ pushS(s); if(s.p&&s.v!=null) noteRecent(s); } }
   }
   if(!queue.length) return;
-  const exam=!!cfg.exam && !onlyMist;
+  const oral=cfg.kind==="oral";
+  const exam=!!cfg.exam && !onlyMist && !oral;
   S.ses={id:Date.now().toString(36), queue:shuffle(queue), idx:0, right:0, log:[], q:null, res:null, chosen:null, showEx:false, input:"", exam,
-    mode:cfg.mode, strict:cfg.strict, only:!!onlyMist, cfgSnap:{pats:cfg.pats.slice(), types:cfg.types.slice(), theory:cfg.theory.slice()},
+    mode:cfg.mode, kind:oral?"oral":"test", strict:cfg.strict, only:!!onlyMist, cfgSnap:{pats:cfg.pats.slice(), types:cfg.types.slice(), theory:cfg.theory.slice()},
     timer:{elapsed:0, running: exam && cfg.limit>0, since: exam && cfg.limit>0 ? Date.now() : 0, limit: exam ? (cfg.limit||0) : 0}};
   loadQ(); render();
 }
 /* ---- paused sessions ---- */
 function snapOf(s){
   const t=timerNow(s);
-  return {id:s.id, savedAt:Date.now(), queue:s.queue, idx:s.idx+(s.res?1:0), right:s.right, exam:s.exam, mode:s.mode, strict:s.strict, only:s.only, cfgSnap:s.cfgSnap,
+  return {id:s.id, savedAt:Date.now(), queue:s.queue, idx:s.idx+(s.res?1:0), right:s.right, exam:s.exam, mode:s.mode, kind:s.kind||"test", strict:s.strict, only:s.only, cfgSnap:s.cfgSnap,
     log:s.log.map(x=>({spec:x.q.spec, chosen:x.chosen, ok:x.res.ok, parts:x.res.parts||null})), timer:{elapsed:t, running:false, since:0, limit:s.timer?s.timer.limit:0, wasRunning:!!(s.timer&&s.timer.running)}};
 }
 function pauseSession(){
@@ -1769,7 +1865,7 @@ function resumeSession(id){
   const log=[]; sn.log.forEach(x=>{ if(validSpec(x.spec)){ try{ log.push({q:makeQ(x.spec), chosen:x.chosen, res:{ok:x.ok, parts:x.parts}}); }catch(e){} } });
   const queue=sn.queue.filter(validSpec);
   S.ses={id:sn.id, queue, idx:Math.min(sn.idx,queue.length-1), right:sn.right, log, q:null, res:null, chosen:null, showEx:false, input:"", exam:sn.exam,
-    mode:sn.mode, strict:sn.strict, only:sn.only, cfgSnap:sn.cfgSnap, timer:{elapsed:sn.timer.elapsed||0, running:!!sn.timer.wasRunning, since:sn.timer.wasRunning?Date.now():0, limit:sn.timer.limit||0}};
+    mode:sn.mode, kind:sn.kind||"test", strict:sn.strict, only:sn.only, cfgSnap:sn.cfgSnap, timer:{elapsed:sn.timer.elapsed||0, running:!!sn.timer.wasRunning, since:sn.timer.wasRunning?Date.now():0, limit:sn.timer.limit||0}};
   S.tab="train"; loadQ(); render(); window.scrollTo({top:0});
 }
 /* ---- timer ---- */
@@ -1782,7 +1878,18 @@ setInterval(()=>{
   const el=document.getElementById("tmr"); if(el) el.textContent=timerLabel(s);
   if(s.timer.limit && timerNow(s)>=s.timer.limit*60000){ s.timer.elapsed=s.timer.limit*60000; s.timer.running=false; s.timeout=true; s.done=true; dropPaused(s.id); if(S.tab==="train") render(); }
 },1000);
-function loadQ(){ S.det=null; const s=S.ses; s.q=makeQ(s.queue[s.idx]); s.res=null; s.chosen=null; s.showEx=false; s.input=""; s.msel={}; }
+function loadQ(){ S.det=null; const s=S.ses; s.q=makeQ(s.queue[s.idx]); s.res=null; s.chosen=null; s.showEx=false; s.input=""; s.msel={}; s.revealed=false; }
+const isOral = (s,q)=> !!(q&&q.oral) || (s&&s.kind==="oral");
+function reveal(){ const s=S.ses; if(!s||s.res||s.revealed) return; s.revealed=true; render(); }
+function selfGrade(g){
+  const s=S.ses; if(!s||s.res||!s.revealed) return;
+  const ok = g===2;
+  s.res={ok, self:g}; s.chosen=["لَمْ أَعْرِفْ","بِأَخْطَاءٍ","عَرَفْتُ"][g];
+  if(ok) s.right++;
+  s.log.push({q:s.q, chosen:s.chosen, res:s.res});
+  record(s.q.spec, ok);
+  next();
+}
 function answer(val){
   const s=S.ses; if(!s||s.res) return;
   const q=s.q; let res;
@@ -1832,26 +1939,36 @@ function viewSetup(){
   const th = `<div class="grp"><div class="grp-h"><div class="t"><h3 class="arh">مَسَائِلُ نَظَرِيَّةٌ</h3><span class="muted small">Теория</span></div></div>
      <div class="row rtl" dir="rtl">${THEORY_TOPICS.map(t=>chip(t.id,c.theory.includes(t.id),ar(t.ar),"th")).join("")}</div></div>`;
   const types = TGROUPS.map(g=>chip(g.id,c.types.includes(g.id),ar(g.ar),"type")).join("");
-  const ok = (c.types.length && c.pats.length) || c.theory.length;
+  const oral = c.kind==="oral";
+  const ok = oral ? ((c.pats.length && c.oral.some(k=>k!=="q")) || (c.oral.includes("q") && ((c.types.length && c.pats.length) || c.theory.length)))
+                  : ((c.types.length && c.pats.length) || c.theory.length);
+  const kindSeg = `<section class="panel"><div class="opts-line" style="padding:0"><h2 style="margin:0">Вид тренировки</h2><div class="seg">
+      <button aria-pressed="${!oral}" data-act="kind" data-v="test">Тест</button>
+      <button aria-pressed="${oral}" data-act="kind" data-v="oral">Устно</button></div></div>
+      ${oral?`<p class="small muted" style="margin:8px 0 0">Отвечаешь вслух, открываешь ответ и сам оцениваешь себя. «С ошибками» и «Не знал» попадают в список ошибок.</p>`:""}</section>`;
+  const oralSec = oral ? `<section class="panel"><h2>Что спрашивать устно</h2><div class="olist">${ORAL_KINDS.map(k=>`<label class="switch"><input type="checkbox" data-act="oralk" data-v="${k.id}" ${c.oral.includes(k.id)?"checked":""}><span>${ar(k.ar)} <span class="muted small">· ${esc(k.ru)}</span></span></label>`).join("")}</div></section>` : "";
+  const showTypes = !oral || c.oral.includes("q");
   return `
+  ${kindSeg}
   ${ml?`<div class="mist"><div><b>Ошибки: ${ml}</b><div class="small muted">Уходят после двух верных ответов подряд</div></div><button class="btn" data-act="startMist">Повторить</button></div>`:""}
   <section class="panel"><div class="opts-line" style="padding-top:0"><h2 style="margin:0">Разделы книги</h2><div class="row"><button class="link" data-act="allPats">Все</button><span class="muted">·</span><button class="link" data-act="noPats">Ничего</button></div></div>${groups}${th}</section>
-  <section class="panel"><h2>Что спрашивать</h2><div class="row rtl" dir="rtl">${types}</div></section>
+  ${oralSec}
+  ${showTypes?`<section class="panel"><h2>${oral?"Типы вопросов":"Что спрашивать"}</h2><div class="row rtl" dir="rtl">${types}</div></section>`:""}
   <section class="panel">
     <h2>Настройки</h2>
-    <div class="opts-line"><span>Ответ</span><div class="seg">
+    ${oral?"":`<div class="opts-line"><span>Ответ</span><div class="seg">
       <button aria-pressed="${c.mode==="choice"}" data-act="mode" data-v="choice">Варианты</button>
-      <button aria-pressed="${c.mode==="input"}" data-act="mode" data-v="input">Ввод</button></div></div>
+      <button aria-pressed="${c.mode==="input"}" data-act="mode" data-v="input">Ввод</button></div></div>`}
     <div class="opts-line"><span>Карточек</span><div class="seg">
       ${[10,20,30,50].map(n=>`<button aria-pressed="${c.len===n}" data-act="len" data-v="${n}">${n}</button>`).join("")}</div></div>
-    <label class="switch"><input type="checkbox" id="exam" data-act="exam" ${c.exam?"checked":""}><span>Режим экзамена: без подсказок, разбор в конце</span></label>
-    ${c.exam?`<div class="opts-line"><span>Лимит времени</span><div class="seg">${[0,5,10,20,30].map(n=>`<button aria-pressed="${(c.limit||0)===n}" data-act="limit" data-v="${n}">${n?n+" мин":"нет"}</button>`).join("")}</div></div>
+    ${oral?"":`<label class="switch"><input type="checkbox" id="exam" data-act="exam" ${c.exam?"checked":""}><span>Режим экзамена: без подсказок, разбор в конце</span></label>`}
+    ${c.exam&&!oral?`<div class="opts-line"><span>Лимит времени</span><div class="seg">${[0,5,10,20,30].map(n=>`<button aria-pressed="${(c.limit||0)===n}" data-act="limit" data-v="${n}">${n?n+" мин":"нет"}</button>`).join("")}</div></div>
     <p class="small muted" style="margin:-2px 0 4px">Без лимита секундомер запускается кнопкой в окне экзамена.</p>`:""}
-    <label class="switch"><input type="checkbox" id="strict" data-act="strict" ${c.strict?"checked":""}><span>Проверять огласовки при вводе</span></label>
+    ${oral?"":`<label class="switch"><input type="checkbox" id="strict" data-act="strict" ${c.strict?"checked":""}><span>Проверять огласовки при вводе</span></label>`}
     <label class="switch"><input type="checkbox" id="mix" data-act="mix" ${c.mix?"checked":""}><span>Подмешивать прошлые ошибки</span></label>
   </section>
   <div class="hero-cta">
-    <button class="btn btn-p btn-wide" data-act="start" ${ok?"":"disabled"}>${c.exam?"Начать экзамен":"Начать"} · ${c.len}</button>
+    <button class="btn btn-p btn-wide" data-act="start" ${ok?"":"disabled"}>${oral?"Начать устно":c.exam?"Начать экзамен":"Начать"} · ${c.len}</button>
     <p class="small muted" style="margin:0">${PATS.reduce((a,p)=>a+p.verbs.length,0)} глаголов в ${PATS.length} разделах. Недавние слова не повторяются.</p>
   </div>`;
 }
@@ -1916,6 +2033,7 @@ function viewSession(){
   const s=S.ses, total=s.queue.length;
   if(s.done) return viewSummary();
   const q=s.q, answered=!!s.res && !s.exam, inputMode = !q.fixed && (s.mode||S.cfg.mode)==="input";
+  if(isOral(s,q)) return viewOral();
   const hideTag=["bab","naw","full"].includes(q.spec.type), hidePair=q.spec.type==="full";
   const top = q.P ? `<div class="card-top"><div class="verb">${hidePair?"":ar(q.pair)}</div>${hideTag?"":`<span class="tag">${esc(tagOf(q.P))}</span>`}</div>` : `<div class="card-top"><span class="tag">${esc(THEORY_TOPICS.find(t=>t.id===q.spec.p).ar)}</span></div>`;
   let body;
@@ -1944,9 +2062,9 @@ function viewSession(){
   if(answered){
     const r=s.res;
     fb=`<div class="fb ${r.ok?"ok":"no"}"><div class="h">${r.ok?"صَوَابٌ":"خَطَأٌ"}</div>
-      ${!r.ok&&!q.multi?`<div>الصَّوَابُ: <span class="big2">${esc(q.answer)}</span></div>`:""}
+      ${!r.ok&&!q.multi?(diffHTML(s.chosen,q)||`<div>الصَّوَابُ: <span class="big2">${esc(q.answer)}</span></div>`):""}
       ${q.multi?`<div style="font-size:1rem">${q.parts.map((pt,k)=>`${r.parts[k]?"✓":"✗"} ${esc(pt.label)}`).join(" · ")}</div>`:""}
-      ${!r.ok&&inputMode&&s.chosen?`<div>جَوَابُكَ: ${esc(s.chosen)}</div>`:""}
+      ${!r.ok&&inputMode&&s.chosen&&!diffable(s.chosen,q)?`<div>جَوَابُكَ: ${esc(s.chosen)}</div>`:""}
       ${r.note?`<div style="font-size:1rem">${esc(r.note.ar)}</div>`:""}</div>
       <div class="actions"><button class="btn" data-act="ex">${s.showEx?"Скрыть":"Объяснить"}</button>
       <button class="btn btn-p" id="next" data-act="next">${s.idx+1>=total?"Итог":"Дальше"}</button></div>
@@ -1957,13 +2075,53 @@ function viewSession(){
   <section class="card">${top}<div class="task">${esc(q.task.ar)}</div>${askHTML(q)}${body}${fb}</section>`;
 }
 
+function diffable(chosen,q){
+  if(!chosen||!q||q.multi||q.textOpts||q.oral) return false;
+  const A=/[\u0621-\u064A]/; return A.test(chosen) && A.test(q.answer||"") && norm(chosen).length<=40;
+}
+function diffHTML(chosen,q){
+  if(!diffable(chosen,q)) return "";
+  const d=bestTarget(chosen,[q.answer,...(q.alts||[])]);
+  if(!d || d.cost===0) return "";
+  let u="", r="", har=false, bad=false;
+  d.ops.forEach(o=>{
+    if(o.t==="eq"){ u+=esc(o.a.t); r+=esc(o.b.t); }
+    else if(o.t==="har"){ har=true; u+=`<span class="d-har">${esc(o.a.t)}</span>`; r+=`<span class="d-fix">${esc(o.b.t)}</span>`; }
+    else if(o.t==="sub"){ bad=true; u+=`<span class="d-bad">${esc(o.a.t)}</span>`; r+=`<span class="d-fix">${esc(o.b.t)}</span>`; }
+    else if(o.t==="ins"){ bad=true; u+=`<span class="d-bad">${esc(o.a.t)}</span>`; }
+    else { bad=true; r+=`<span class="d-miss">${esc(o.b.t)}</span>`; }
+  });
+  const hint=[har?"оранжевым — ошибка в огласовке":"", bad?"красным — лишняя или неверная буква":""].filter(Boolean).join(" · ");
+  return `<div class="dl"><span>جَوَابُكَ:</span><span class="dw" lang="ar">${u}</span></div>
+    <div class="dl"><span>الصَّوَابُ:</span><span class="dw" lang="ar">${r}</span></div>
+    <div class="dhint">${hint}${hint?"; ":""}зелёным — как правильно</div>`;
+}
+function oralAnswerHTML(q){
+  if(q.rows) return `<dl class="orows">${q.rows.map(([l,v])=>`<dt>${esc(l.ar)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>`;
+  if(q.multi) return `<dl class="orows">${q.parts.map(pt=>`<dt>${esc(pt.label)}</dt><dd>${esc(pt.answer)}</dd>`).join("")}</dl>`;
+  const alts=(q.alts||[]).filter(a=>a!==q.answer);
+  return `<div class="fb ok"><div class="big2" style="${q.textOpts?"font-size:1.25rem":""}">${esc(q.answer)}</div>${alts.length?`<div style="font-size:1rem">وَيَجُوزُ: ${alts.map(esc).join(" · ")}</div>`:""}</div>`;
+}
+function viewOral(){
+  const s=S.ses, q=s.q, total=s.queue.length;
+  const hideTag=["bab","naw","full"].includes(q.spec.type), hidePair=q.spec.type==="full"||q.oral;
+  const top = q.P ? `<div class="card-top"><div class="verb">${hidePair?"":ar(q.pair)}</div>${hideTag?"":`<span class="tag">${esc(tagOf(q.P))}</span>`}</div>` : `<div class="card-top"><span class="tag">${esc(THEORY_TOPICS.find(t=>t.id===q.spec.p).ar)}</span></div>`;
+  const body = !s.revealed
+    ? `<button class="btn btn-p btn-wide" data-act="reveal">Показать ответ</button><p class="oral-hint">Сначала ответь вслух</p>`
+    : `${oralAnswerHTML(q)}
+       <div class="grade"><button class="btn g0" data-act="self" data-v="0">Не знал</button><button class="btn g1" data-act="self" data-v="1">С ошибками</button><button class="btn g2" data-act="self" data-v="2">Знал</button></div>
+       ${q.ex||q.oral?`<div class="actions">${q.ex?`<button class="btn" data-act="ex">${s.showEx?"Скрыть":"Объяснить"}</button>`:""}${q.P?`<button class="btn btn-ghost" data-act="toTable" data-p="${q.P.id}" data-v="${q.spec.v}">Вся таблица глагола</button>`:""}</div>`:""}
+       ${s.showEx&&q.ex?exHTML(q.ex,{alts:q.fixed?[]:q.alts, gloss:q.gloss, ctx:(q.P&&q.ex&&q.ex.type)?{key:"q"}:null}):""}`;
+  return `<div class="progress"><div class="bar"><i style="width:${pct(s.idx,total)}%"></i></div><span class="badge">УСТНО</span><span class="score">${s.idx+1}/${total}</span><button class="link" data-act="quit">Отложить</button></div>
+  <section class="card">${top}<div class="task">${esc(q.task.ar)}</div>${askHTML(q)}${body}</section>`;
+}
 function viewSummary(){
   const s=S.ses, total=s.queue.length, wr=s.log.filter(x=>!x.res.ok).length;
   const rev = s.exam ? `<section class="panel"><h2>Разбор</h2><div class="rev">${s.log.map((x,k)=>{
       const q=x.q; const open=s.open===k;
       return `<div class="rev-item ${x.res.ok?"":"no"}">
         <div class="q">${k+1}. ${esc(q.task.ar)} ${q.pair?"— "+esc(q.pair):""} ${q.askText?esc(q.askText):(q.word?"«"+esc(q.word)+"»":esc(q.ask||"")+(q.askSub?" — "+esc(q.askSub):""))}</div>
-        <div class="a">${x.res.ok?"✓ ":"✗ "}${esc(x.chosen||"—")}${x.res.ok?"":" ← الصَّوَابُ: "+esc(q.answer)}</div>
+        ${!x.res.ok&&diffable(x.chosen,q)?`<div class="fb no" style="padding:6px 10px">${diffHTML(x.chosen,q)}</div>`:`<div class="a">${x.res.ok?"✓ ":"✗ "}${esc(x.chosen||"—")}${x.res.ok?"":" ← الصَّوَابُ: "+esc(q.answer)}</div>`}
         <div><button class="link" data-act="revEx" data-k="${k}">${open?"Скрыть":"Объяснить"}</button></div>
         ${open?exHTML(q.ex,{alts:q.fixed?[]:q.alts,gloss:q.gloss,ctx:(q.P&&q.ex&&q.ex.type)?{key:"q"+k}:null}):""}
       </div>`; }).join("")}</div></section>` : "";
@@ -2048,6 +2206,8 @@ function viewStats(){
       else if(s.type==="identT"){ w=verbPair(P,Vb); lab="تَمْيِيزُ الصِّيغَةِ"; }
       else if(s.type==="asl"){ w=form(P,Vb,s.t,s.i).text; lab="الْأَصْلُ"; }
       else if(s.type==="zin"){ w=form(P,Vb,s.t,s.i).text; lab="زِنْ"; }
+      else if(s.type==="oral_ist"){ w=verbPair(P,Vb); lab="التَّصْرِيفُ الِاصْطِلَاحِيُّ · устно"; }
+      else if(s.type==="oral_lug"){ w=verbPair(P,Vb); lab="التَّصْرِيفُ اللُّغَوِيُّ: "+TYPE_AR[s.t]+" · устно"; }
       else if(s.type==="full"){ w=form(P,Vb,s.t,s.i).text; lab="التَّصْرِيفُ التَّامُّ"; }
       else { w=form(P,Vb,s.type,s.i).text; lab=TYPE_AR[s.type]+(INDEXED[s.type]?" — "+(s.type==="fail"||s.type==="maf"?NUM_AR[s.i]:PRON[s.i]):""); }
     }catch(e){ return ""; }
@@ -2059,7 +2219,7 @@ function viewStats(){
       <div class="stat"><b>${st.today.d===today()?st.today.n:0}</b><small>сегодня</small></div>
       <div class="stat"><b>${streakNow()}</b><small>дней подряд</small></div>
     </div>
-    <section class="panel"><h2>По типам вопросов</h2><div class="acc">${TGROUPS.map(g=>row(ar(g.ar),st.t[g.id])).join("")}${row(ar("النَّظَرِيَّةُ"),st.t.theory)}</div></section>
+    <section class="panel"><h2>По типам вопросов</h2><div class="acc">${TGROUPS.map(g=>row(ar(g.ar),st.t[g.id])).join("")}${row(ar("النَّظَرِيَّةُ"),st.t.theory)}${st.t.oral_ist?row(ar("الِاصْطِلَاحِيُّ شَفَهِيًّا"),st.t.oral_ist):""}${st.t.oral_lug?row(ar("اللُّغَوِيُّ شَفَهِيًّا"),st.t.oral_lug):""}</div></section>
     <section class="panel"><h2>По разделам</h2><div class="acc">${pg}</div></section>
     ${weak.length?`<section class="panel"><h2>Слабые места</h2><div class="acc">${weak.map(x=>row(ar(patLabel(x.p)),x.o)).join("")}</div></section>`:""}
     <section class="panel"><h2>Ошибки${ml.length?` · ${ml.length}`:""}</h2>
@@ -2094,8 +2254,8 @@ function pausedHTML(){
   if(inTrain || (!list.length && !cur)) return "";
   const famLabel = sn=>{ const fams=FAMS.filter(f=>PATS.some(p=>p.grp===f.id&&sn.cfgSnap.pats.includes(p.id))).map(f=>f.ar); const th=sn.cfgSnap.theory.length?["النَّظَرِيَّةُ"]:[]; const a=[...fams,...th]; return a.length>2?a.slice(0,2).join("، ")+" +"+(a.length-2):a.join("، "); };
   const when = t=>{ const d=new Date(t), n=new Date(); const hm=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); return d.toDateString()===n.toDateString()?"сегодня "+hm:d.getDate()+"."+String(d.getMonth()+1).padStart(2,"0")+" "+hm; };
-  return `<div class="pzs">${cur}${list.map(sn=>`<div class="pz"><div class="pz-t"><b>${sn.exam?"Экзамен":(sn.only?"Ошибки":"Тренировка")} · ${sn.idx}/${sn.queue.length}</b>
-      <span class="muted small">${sn.right} верно · ${sn.mode==="input"?"ввод":"варианты"}${sn.exam&&sn.timer.elapsed?" · "+(sn.timer.limit?"осталось "+mmss(sn.timer.limit*60000-sn.timer.elapsed):mmss(sn.timer.elapsed)):""} · ${when(sn.savedAt)}</span>
+  return `<div class="pzs">${cur}${list.map(sn=>`<div class="pz"><div class="pz-t"><b>${sn.exam?"Экзамен":(sn.only?"Ошибки":sn.kind==="oral"?"Устно":"Тренировка")} · ${sn.idx}/${sn.queue.length}</b>
+      <span class="muted small">${sn.right} верно · ${sn.kind==="oral"?"устно":sn.mode==="input"?"ввод":"варианты"}${sn.exam&&sn.timer.elapsed?" · "+(sn.timer.limit?"осталось "+mmss(sn.timer.limit*60000-sn.timer.elapsed):mmss(sn.timer.elapsed)):""} · ${when(sn.savedAt)}</span>
       <span class="ar small2">${esc(famLabel(sn))}</span></div>
       <div class="pz-b"><button class="btn btn-p" data-act="resume" data-v="${sn.id}">Продолжить</button><button class="btn btn-ghost" data-act="dropPz" data-v="${sn.id}" aria-label="Удалить">✕</button></div></div>`).join("")}</div>`;
 }
@@ -2134,6 +2294,10 @@ document.addEventListener("click",e=>{
     case "noPats": c.pats=[]; c.theory=[]; saveAll(); render(); break;
     case "type": toggle(c.types,v); saveAll(); render(); break;
     case "mode": c.mode=v; saveAll(); render(); break;
+    case "kind": c.kind=v; saveAll(); render(); break;
+    case "oralk": toggle(c.oral,v); saveAll(); render(); break;
+    case "reveal": reveal(); break;
+    case "self": selfGrade(+v); break;
     case "len": c.len=+v; saveAll(); render(); break;
     case "strict": c.strict=b.checked; saveAll(); break;
     case "mix": c.mix=b.checked; saveAll(); break;
@@ -2185,6 +2349,11 @@ document.addEventListener("keydown",e=>{
   if(e.target.id==="troot" && e.key==="Enter"){ setCustom(); return; }
   if(S.tab!=="train"||!S.ses||S.ses.done) return;
   const s=S.ses;
+  if(isOral(s,s.q) && e.target.tagName!=="INPUT"){
+    if(!s.revealed && (e.key===" "||e.key==="Enter")){ e.preventDefault(); reveal(); }
+    else if(s.revealed && /^[1-3]$/.test(e.key)){ selfGrade(+e.key-1); }
+    return;
+  }
   if(e.key==="Enter"){
     if(s.res && !s.exam){ e.preventDefault(); next(); }
     else if(e.target.id==="ans"){ e.preventDefault(); if(e.target.value.trim()) answer(e.target.value); }
@@ -2199,7 +2368,7 @@ render();
 
 <script>
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.0.8";
+window.APP_VERSION="1.1.0";
 if(window.TasrifApp){
   const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
   rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));
