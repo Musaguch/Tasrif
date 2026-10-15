@@ -1,4 +1,4 @@
-const VERSION="1.0.3";
+const VERSION="1.0.4";
 const CORE="tasrif-"+VERSION;
 const FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CORE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
