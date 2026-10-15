@@ -1832,7 +1832,7 @@ const Voice = {
     if(this.model) return this.model;
     if(this.loading) return this.loading;
     this.loading = (async()=>{
-      const T = await import(TJS_URL);
+      const T = await import(TJS_URL); this.T = T;
       T.env.allowLocalModels = false;
       const opts = {
         device: "wasm",
@@ -1864,11 +1864,45 @@ const Voice = {
       m.stop();
     });
   },
-  async transcribe(blob, long){
-    const pipe = await this.load();
+  async pcm(blob){
     const buf = await blob.arrayBuffer();
     const ctx = new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
     const audio = await ctx.decodeAudioData(buf); const data = audio.getChannelData(0); ctx.close();
+    return data;
+  },
+  /* forced decoding: log-probability of each candidate text given the audio */
+  async score(blob, cands){
+    const pipe = await this.load(), T = this.T, {model, processor, tokenizer} = pipe;
+    const data = await this.pcm(blob);
+    const inp = await processor(data);
+    const r = await model.sessions.model.run({input_features: inp.input_features.ort_tensor});
+    const H = new T.Tensor(r.last_hidden_state);
+    const tid = t=>tokenizer.model.tokens_to_ids.get(t);
+    const PREFIX = [tid("<|startoftranscript|>")??50258, tid("<|ar|>")??50272, tid("<|transcribe|>")??50359, tid("<|notimestamps|>")??50363];
+    const EOS = tid("<|endoftext|>")??50257;
+    const seqs = cands.map(c=>[...PREFIX, ...tokenizer.encode(c,{add_special_tokens:false}), EOS]);
+    const L = Math.max(...seqs.map(x=>x.length)), [_,F,D] = H.dims, out=[], B=6;
+    for(let s0=0;s0<seqs.length;s0+=B){
+      const batch=seqs.slice(s0,s0+B), n=batch.length;
+      const ids=new BigInt64Array(n*L); batch.forEach((q,i)=>{ for(let j=0;j<L;j++) ids[i*L+j]=BigInt(j<q.length?q[j]:EOS); });
+      const hd=new Float32Array(n*F*D); for(let i=0;i<n;i++) hd.set(H.data, i*F*D);
+      const o = await model.forward({encoder_outputs:new T.Tensor("float32",hd,[n,F,D]), decoder_input_ids:new T.Tensor("int64",ids,[n,L])});
+      const lg=o.logits.data, V=o.logits.dims[2];
+      batch.forEach((q,i)=>{
+        let tot=0;
+        for(let j=PREFIX.length;j<q.length;j++){
+          const off=(i*L+(j-1))*V; let mx=-Infinity; for(let v=0;v<V;v++) if(lg[off+v]>mx) mx=lg[off+v];
+          let se=0; for(let v=0;v<V;v++) se+=Math.exp(lg[off+v]-mx);
+          tot += lg[off+q[j]]-mx-Math.log(se);
+        }
+        out.push({sum:tot, avg:tot/(q.length-PREFIX.length)});
+      });
+    }
+    return out;
+  },
+  async transcribe(blob, long){
+    const pipe = await this.load();
+    const data = await this.pcm(blob);
     const o = long ? {chunk_length_s:30, stride_length_s:5} : {};
     const r = await pipe(data, o);
     return [String(r.text||"").trim()].filter(Boolean);
@@ -1913,6 +1947,25 @@ function judgeWord(heardList, answers, withHarakat){
     });
   });
   return best || {letters:false, harakat:null, heard:heardList[0]||"", target:answers[0]};
+}
+/* letter edit distance */
+function lev(a,b){ a=[...a]; b=[...b]; const D=Array.from({length:a.length+1},(_,i)=>{const r=new Array(b.length+1).fill(0); r[0]=i; return r;}); for(let j=0;j<=b.length;j++) D[0][j]=j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++) D[i][j]=Math.min(D[i-1][j-1]+(a[i-1]===b[j-1]?0:1), D[i-1][j]+1, D[i][j-1]+1); return D[a.length][b.length]; }
+/* classify heard text (letters only) against candidate forms; cands: [{t, ok, lab}] */
+function nearestForm(heardList, cands){
+  const L=c=>glue(lettersOf(c));
+  const okL=new Set(cands.filter(c=>c.ok).map(c=>L(c.t)));
+  let best=null;
+  heardList.forEach(h=>{
+    const pieces=[h, ...lettersOf(h).split(" ")];
+    pieces.forEach(p=>{ const hl=L(p); if(!hl) return;
+      cands.forEach(c=>{ const cl=L(c.t); if(!c.ok && okL.has(cl)) return;
+        const d=lev(hl,cl)/Math.max(cl.length,1);
+        if(!best || d<best.d || (d===best.d && c.ok && !best.c.ok)) best={d, c, heard:h};
+      });
+    });
+  });
+  return best;
 }
 /* sequence of forms (tasrif line / 14 forms). returns per-row booleans */
 function judgeRows(heardList, rows, withHarakat){
@@ -2299,12 +2352,15 @@ function voiceLiveHTML(v){
   if(v.st==="loading") return `<div class="vbox"><div class="vlive">Загрузка модели… <span id="vprog">${Voice.progress}%</span></div><p class="oral-hint">Один раз, дальше работает сразу</p></div>`;
   if(v.st==="listening") return `<div class="vbox"><div class="vlive"><i></i>Говори…</div>${stop}</div>`;
   if(v.st==="processing") return `<div class="vbox"><div class="vlive">Распознаю…</div></div>`;
-  const msg = {"not-allowed":"Нет доступа к микрофону. Разреши его в настройках.","perm":"Нет доступа к микрофону. Разреши его в настройках.","no-speech":"Не расслышал. Попробуй ещё раз.","network":"Для распознавания нужен интернет.","unsupported":"Этот браузер не умеет распознавать речь.","busy":"Микрофон занят. Попробуй ещё раз."}[v.err] || ("Ошибка распознавания: "+v.err);
+  const msg = {"not-allowed":"Нет доступа к микрофону. Разреши его в настройках.","perm":"Нет доступа к микрофону. Разреши его в настройках.","no-speech":"Не расслышал. Попробуй ещё раз.","network":"Для распознавания нужен интернет.","unsupported":"Этот браузер не умеет распознавать речь.","busy":"Микрофон занят. Попробуй ещё раз.","unclear":"Не разобрал ответ. Скажи чётче и ближе к микрофону."}[v.err] || ("Ошибка распознавания: "+v.err);
   return `<div class="vbox"><div class="vverd no">${esc(msg)}</div><button class="btn btn-p btn-wide" data-act="vstart">Попробовать снова</button><button class="btn btn-wide" data-act="vcancel">Показать ответ</button></div>`;
 }
 function voiceResultHTML(s,q,v){
   const model=v.eng==="model";
-  const heard = `<div class="vheard"><small>Распознано</small>${esc(v.heard||"—")}</div>`;
+  const lab = v.said&&!v.said.ok&&v.said.lab ? `<small style="direction:rtl;text-align:right">${esc(v.said.lab)}</small>` : "";
+  const heard = v.eng==="model"&&v.said
+    ? `<div class="vheard"><small>Услышано как</small>${esc(v.heard||"—")}${lab}</div>`
+    : `<div class="vheard"><small>Распознано</small>${esc(v.heard||"—")}</div>${v.said?`<div class="vheard"><small>Похоже на форму</small>${esc(v.said.t)}${lab}</div>`:""}`;
   const dispute = g=>`<button class="link" data-act="self" data-v="${g}" style="align-self:center">${g===2?"Распознало неверно — засчитать":"Не согласен — отметить как ошибку"}</button>`;
   let verd="", btns="";
   if(v.verdict==="confirm"){ verd=`<div class="vverd q">Буквы верны. Огласовки произнёс так же?</div>`; btns=`<div class="grade" style="grid-template-columns:1fr 1fr"><button class="btn g0" data-act="self" data-v="1">Нет</button><button class="btn g2" data-act="self" data-v="2">Да, верно</button></div>`; }
@@ -2314,10 +2370,22 @@ function voiceResultHTML(s,q,v){
     verd=`<div class="vverd no">✗ ${t}</div>`;
     btns=`<button class="btn btn-p btn-wide" data-act="self" data-v="${v.verdict==="none"?0:1}">Дальше</button><button class="btn btn-wide" data-act="vstart">Повторить запись</button>${dispute(2)}`;
   }
-  const diff = (!q.rows && model && v.verdict==="harakat") ? `<div class="fb no">${diffHTML(v.heard,q)}</div>` : "";
+  const diff = (!q.rows && model && (v.verdict==="harakat"||v.verdict==="wrong") && v.heard) ? `<div class="fb no">${diffHTML(v.heard,q)}</div>` : "";
   return `<div class="vbox">${heard}${verd}${diff}${oralAnswerHTML(q, v.rows)}${btns}
     ${q.ex?`<div class="actions"><button class="btn" data-act="ex">${s.showEx?"Скрыть":"Объяснить"}</button></div>`:""}
     ${s.showEx&&q.ex?exHTML(q.ex,{alts:q.fixed?[]:q.alts, gloss:q.gloss, ctx:(q.P&&q.ex&&q.ex.type)?{key:"q"}:null}):""}</div>`;
+}
+/* candidate forms the student might say instead of the right one */
+function voiceCands(q){
+  const out=[], seen=new Set();
+  const add=(t,ok,lab)=>{ if(!t) return; const k=norm(t); if(seen.has(k)) return; seen.add(k); out.push({t,ok,lab}); };
+  add(q.answer,true,""); (q.alts||[]).forEach(a=>add(a,true,""));
+  const P=q.P, Vb=q.Vb, st=q.spec.type, i=q.spec.i||0;
+  const tryF=(t,k)=>{ try{ if(!has(P,Vb,t)) return; const f=form(P,Vb,t,k); if(f) [f.text,...(f.alts||[])].forEach(x=>add(x,false,sighaLabel(t,k))); }catch(e){} };
+  if(INDEXED[st]) for(let k=0;k<INDEXED[st];k++) tryF(st,k);
+  ["madi","madiP","mud","mudP","amr","nahy","fail","maf","masdar","zarf","ala","sifa"].forEach(t=>{ if(t!==st) tryF(t, Math.min(i,(INDEXED[t]||1)-1)); });
+  mutations(q.answer).slice(0,8).forEach(m=>add(m,false,"другая огласовка"));
+  return out.slice(0,36);
 }
 async function voiceStart(){
   const s=S.ses; if(!s) return; const q=s.q, eng=S.cfg.voice, long=!!q.rows;
@@ -2335,7 +2403,19 @@ async function voiceStop(){
   const s=S.ses; if(!s||!s.voice) return; const q=s.q;
   if(s.voice.eng==="model"){
     s.voice.st="processing"; render();
-    try{ const blob=await Voice.stopRec(); const heard=await Voice.transcribe(blob, !!q.rows); if(S.ses===s&&s.q===q){ heard.length?voiceJudge(heard):(s.voice={st:"error",eng:"model",err:"no-speech"},render()); } }
+    try{
+      const blob=await Voice.stopRec();
+      if(!q.rows && VOICE_TYPES.has(q.spec.type) && !["asl","zin"].includes(q.spec.type)){
+        const cands=voiceCands(q), sc=await Voice.score(blob, cands.map(c=>c.t));
+        if(S.ses!==s||s.q!==q) return;
+        cands.forEach((c,k)=>{ c.sum=sc[k].sum; c.avg=sc[k].avg; });
+        const ranked=[...cands].sort((a,b)=>b.sum-a.sum), top=ranked[0], bestOk=ranked.find(c=>c.ok);
+        s.revealed=true;
+        if(top.avg < -3.2) s.voice={st:"error", eng:"model", err:"unclear"};
+        else s.voice={st:"result", eng:"model", heard:top.t, said:top, verdict: top.ok ? "ok" : (lettersOf(top.t)===lettersOf(bestOk.t) ? "harakat" : "wrong"), margin: bestOk? top.sum-bestOk.sum : 99};
+        render(); return;
+      }
+      const heard=await Voice.transcribe(blob, !!q.rows); if(S.ses===s&&s.q===q){ heard.length?voiceJudge(heard):(s.voice={st:"error",eng:"model",err:"no-speech"},render()); } }
     catch(e){ if(S.ses===s){ s.voice={st:"error", eng:"model", err:String(e&&e.message||e)}; render(); } }
   } else Voice.stopGoogle();
 }
@@ -2346,8 +2426,14 @@ function voiceJudge(heard){
     const r=judgeRows(heard,q.rows,model), all=r.res.every(x=>x!==false);
     s.voice={st:"result", eng:s.voice.eng, heard:r.heard, rows:r.res, verdict: all?(model?"ok":"confirm"):(r.sc===0?"none":"partial")};
   } else {
-    const j=judgeWord(heard,[q.answer,...(q.alts||[])],model);
-    s.voice={st:"result", eng:s.voice.eng, heard:j.heard, verdict: !j.letters?"wrong":(model&&j.harakat!==null?(j.harakat?"ok":"harakat"):"confirm")};
+    if(!model && VOICE_TYPES.has(q.spec.type) && !["asl","zin"].includes(q.spec.type)){
+      const nf=nearestForm(heard, voiceCands(q));
+      const okL = nf && nf.c.ok && nf.d<=0.34;
+      s.voice={st:"result", eng:s.voice.eng, heard:nf?nf.heard:heard[0], said: nf&&!nf.c.ok&&nf.d<=0.34 ? nf.c : null, verdict: okL?"confirm":"wrong"};
+    } else {
+      const j=judgeWord(heard,[q.answer,...(q.alts||[])],model);
+      s.voice={st:"result", eng:s.voice.eng, heard:j.heard, verdict: !j.letters?"wrong":(model&&j.harakat!==null?(j.harakat?"ok":"harakat"):"confirm")};
+    }
   }
   render();
 }
@@ -2609,7 +2695,7 @@ render();
 
 <script>
 if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.1.1-b1";
+window.APP_VERSION="1.1.1-b2";
 if(window.TasrifApp){
   const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
   rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));

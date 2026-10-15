@@ -9,6 +9,10 @@ const t0=Date.now();
 const r = await p.evaluate(async (wavs)=>{
   const res=[];
   try{ await Voice.load(); res.push("loaded"); }catch(e){ return ["LOAD FAIL "+(e.message||e)]; }
+  { const w=wavs[0]; const bin=Uint8Array.from(atob(w.b64),c=>c.charCodeAt(0)); const t=performance.now();
+    try{ const c=["كَتَبَ","كُتِبَ","كَتَبْتُ","كَتَبُوا","كَتَبَا","كَتَبَتْ","يَكْتُبُ","اُكْتُبْ","كَاتِبٌ","مَكْتُوبٌ","كَتِبَ","كُتُبٌ"]; const sc=await Voice.score(new Blob([bin],{type:"audio/wav"}), c);
+      res.push("SCORE "+c.map((x,k)=>[x,sc[k].sum.toFixed(2)]).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x.join(":")).join(" ")+" "+Math.round(performance.now()-t)+"ms"); }
+    catch(e){ res.push("SCORE FAIL "+(e.stack||e.message||e)); } }
   for(const w of wavs){
     const bin=Uint8Array.from(atob(w.b64),c=>c.charCodeAt(0));
     const t=performance.now();

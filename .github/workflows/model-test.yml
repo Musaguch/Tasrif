@@ -25,9 +25,7 @@ jobs:
           npm install
           M=eventhorizon0/tarteel-ai-onnx-whisper-base-ar-quran
           true
-          node score.mjs || true
       - name: Browser end-to-end
-        if: false
         working-directory: ci/model
         run: |
           npm install playwright@1.48.2 && npx playwright install --with-deps chromium
