@@ -35,7 +35,6 @@ jobs:
       - name: Publish
         if: always()
         run: |
-          mkdir -p /tmp/r && cp ci/model/model-out.txt /tmp/r/ || echo "no output" > /tmp/r/model-out.txt
-          git config user.name ci; git config user.email ci@example.com
-          git checkout --orphan r && git rm -rq --cached . && cp /tmp/r/* . && git add model-out.txt && git commit -qm "model test"
-          git push -f origin HEAD:ci-model
+          mkdir -p /tmp/r && (cp ci/model/model-out.txt /tmp/r/ || echo "no output" > /tmp/r/model-out.txt)
+          cd /tmp/r && git init -q && git add . && git -c user.name=ci -c user.email=ci@example.com commit -qm "model test"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" HEAD:ci-model
