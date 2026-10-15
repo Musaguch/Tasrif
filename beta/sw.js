@@ -1,4 +1,4 @@
-const VERSION="1.1.1-b3";
+const VERSION="1.1.1-b4";
 const CORE="tasrifb-"+VERSION;
 const FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CORE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
@@ -13,7 +13,8 @@ self.addEventListener("fetch",e=>{
   if(u.origin!==location.origin) return;
   if(!true && u.pathname.includes("/beta/")) return;
   if(e.request.mode==="navigate"){
-    e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put("./index.html",cp)); return n; }).catch(()=>caches.match("./index.html")));
+    const coi=r=>{ if(!r) return r; const h=new Headers(r.headers); h.set("Cross-Origin-Opener-Policy","same-origin"); h.set("Cross-Origin-Embedder-Policy","credentialless"); return new Response(r.body,{status:r.status,statusText:r.statusText,headers:h}); };
+    e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put("./index.html",cp)); return coi(n); }).catch(()=>caches.match("./index.html").then(coi)));
     return;
   }
   e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put(e.request,cp)); return n; }).catch(()=>caches.match(e.request)));

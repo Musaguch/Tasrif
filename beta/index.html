@@ -1834,6 +1834,7 @@ const Voice = {
     this.loading = (async()=>{
       const T = await import(TJS_URL); this.T = T;
       T.env.allowLocalModels = false;
+      try{ if(window.crossOriginIsolated) T.env.backends.onnx.wasm.numThreads = Math.max(1, Math.min(4, (navigator.hardwareConcurrency||4)-1)); }catch(e){}
       const opts = {
         device: "wasm",
         dtype: {encoder_model:"q4", decoder_model_merged:"q4"},
@@ -2697,8 +2698,12 @@ render();
 </script>
 
 <script>
-if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{})); }
-window.APP_VERSION="1.1.1-b3";
+if("serviceWorker" in navigator){ window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(()=>{
+  /* multithreaded speech model needs cross-origin isolation, which the service worker provides after one reload */
+  if(!window.crossOriginIsolated && navigator.serviceWorker.controller){ try{ if(!sessionStorage.getItem("coi")){ sessionStorage.setItem("coi","1"); location.reload(); } }catch(e){} }
+  else if(!window.crossOriginIsolated) navigator.serviceWorker.addEventListener("controllerchange",()=>{ try{ if(!sessionStorage.getItem("coi")){ sessionStorage.setItem("coi","1"); location.reload(); } }catch(e){} });
+}).catch(()=>{})); }
+window.APP_VERSION="1.1.1-b4";
 if(window.TasrifApp){
   const rep=()=>{ const m=getComputedStyle(document.body).backgroundColor.match(/\d+/g); if(m){ const l=(+m[0]*299+ +m[1]*587+ +m[2]*114)/1000; TasrifApp.setDark(l<128); } };
   rep(); new MutationObserver(rep).observe(document.documentElement,{attributes:true}); matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(rep,50));
