@@ -15,7 +15,10 @@ const enc = s=>tokenizer.encode(s,{add_special_tokens:false});
 const prefixTry = [];
 const sot = gc.decoder_start_token_id ?? 50258;
 const forced = (gc.forced_decoder_ids||[]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]).filter(x=>x!=null);
-const PREFIX = [sot, ...forced];
+const tid = t=>tokenizer.model.tokens_to_ids.get(t);
+log("ids", {ar:tid("<|ar|>"), tr:tid("<|transcribe|>"), nt:tid("<|notimestamps|>")});
+{ const inp=await processor(load("wav/1.wav")); const g=await model.generate({inputs:inp.input_features, max_new_tokens:20}); log("GEN ids", Array.from(g.tolist? g.tolist()[0] : g[0]).map(Number)); }
+let PREFIX = [sot, ...forced];
 log("PREFIX", PREFIX, tokenizer.decode(PREFIX));
 const EOS = Array.isArray(gc.eos_token_id)?gc.eos_token_id[0]:(gc.eos_token_id ?? 50257);
 async function encode(audio){
@@ -53,12 +56,14 @@ const sets = {
  "4.wav":["مَكْتُوبٌ","مَكْتُوبَانِ","مَكْتُوبُونَ","كَاتِبٌ","مَكْتَبٌ","مُكْتَتَبٌ","مَكْتُوبَةٌ","يَكْتُبُونَ"],
  "5.wav":["اِسْتَغْفَرَ","اُسْتُغْفِرَ","يَسْتَغْفِرُ","اِسْتَغْفِرْ","اِسْتِغْفَارٌ","مُسْتَغْفِرٌ","اِسْتَغْفَرُوا","اِسْتَغْفَرْتُ"]
 };
+const PREFIXES = {sot:[sot], full:[sot,tid("<|ar|>"),tid("<|transcribe|>"),tid("<|notimestamps|>")], nolang:[sot,tid("<|transcribe|>"),tid("<|notimestamps|>")]};
+for(const [pn,pv] of Object.entries(PREFIXES)){ PREFIX=pv; log("--- prefix", pn, pv);
 for(const f of Object.keys(sets)){
   const t=Date.now(); const H=await encode(load("wav/"+f)); const te=Date.now()-t;
   const r=await score(H, sets[f]); const ts=Date.now()-t-te;
   const bs=[...r].sort((a,b)=>b.sum-a.sum).slice(0,4).map(x=>x.c+":"+x.sum);
   const ba=[...r].sort((a,b)=>b.avg-a.avg).slice(0,4).map(x=>x.c+":"+x.avg);
   log(f, "expected", sets[f][0], "| enc", te+"ms score", ts+"ms", "| SUM", bs.join(" "), "| AVG", ba.join(" "));
-}
+}}
 }catch(e){ log("ERR", e.stack||e.message); }
 fs.appendFileSync("model-out.txt","\n=== SCORE ===\n"+out.join("\n")+"\n");
