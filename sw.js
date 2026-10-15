@@ -1,8 +1,8 @@
-const VERSION="1.1.0";
+const VERSION="1.1.1";
 const CORE="tasrif-"+VERSION;
 const FILES=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 self.addEventListener("install",e=>{ e.waitUntil(caches.open(CORE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())); });
-self.addEventListener("activate",e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CORE&&k!=="tasrif-fonts").map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
+self.addEventListener("activate",e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith("tasrif-")&&k!==CORE&&k!=="tasrif-fonts").map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
 self.addEventListener("fetch",e=>{
   const u=new URL(e.request.url);
   if(e.request.method!=="GET") return;
@@ -11,6 +11,7 @@ self.addEventListener("fetch",e=>{
     return;
   }
   if(u.origin!==location.origin) return;
+  if(!false && u.pathname.includes("/beta/")) return;
   if(e.request.mode==="navigate"){
     e.respondWith(fetch(e.request,{cache:"no-cache"}).then(n=>{ const cp=n.clone(); caches.open(CORE).then(c=>c.put("./index.html",cp)); return n; }).catch(()=>caches.match("./index.html")));
     return;

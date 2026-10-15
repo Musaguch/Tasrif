@@ -1,7 +1,7 @@
 name: Voice model test
 on:
   push:
-    paths: [".github/workflows/model-test.yml", "ci/model/**"]
+    paths: [".github/workflows/model-test.yml", "ci/model/**", "beta/**"]
   workflow_dispatch:
 permissions:
   contents: write
@@ -24,8 +24,14 @@ jobs:
         run: |
           npm install
           M=eventhorizon0/tarteel-ai-onnx-whisper-base-ar-quran
-          for cfg in "fp32 q4" "fp16 q4" "fp32 fp16" "fp32 fp32" "q4 q4"; do node test.mjs $M $cfg || true; done
-          node test.mjs onnx-community/whisper-base fp32 q4 || true
+          node test.mjs $M q4 q4 || true
+      - name: Browser end-to-end
+        working-directory: ci/model
+        run: |
+          npm install playwright@1.48.2 && npx playwright install --with-deps chromium
+          mkdir -p /tmp/site/Tasrif && cp -r ../../*.html ../../*.js ../../*.png ../../*.webmanifest ../../beta /tmp/site/Tasrif/
+          (cd /tmp/site && python3 -m http.server 8000 &) ; sleep 2
+          timeout 900 node browser.mjs || true
       - name: Publish
         if: always()
         run: |

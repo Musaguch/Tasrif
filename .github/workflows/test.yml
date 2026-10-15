@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix: { api: [30, 35] }
+      matrix: { api: [35] }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "17" }
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: "8.9" }
-      - run: cd android && gradle assembleRelease --no-daemon
+      - run: cd android && gradle assembleStableRelease assembleBetaRelease --no-daemon
       - name: KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -29,11 +29,11 @@ jobs:
           target: google_apis
           disable-animations: true
           script: |
-            adb install -r android/app/build/outputs/apk/release/app-release.apk > out.txt 2>&1
+            adb install -r android/app/build/outputs/apk/beta/release/app-beta-release.apk > out.txt 2>&1
             adb logcat -c
-            adb shell am start -W -n io.github.musaguch.tasrif/.MainActivity >> out.txt 2>&1
+            adb shell am start -W -n io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity >> out.txt 2>&1
             sleep 25
-            echo "=== PID ===" >> out.txt; (adb shell pidof io.github.musaguch.tasrif || echo "NOT RUNNING") >> out.txt
+            echo "=== PID ===" >> out.txt; (adb shell pidof io.github.musaguch.tasrif.beta || echo "NOT RUNNING") >> out.txt
             echo "=== CRASH ===" >> out.txt; adb logcat -d -b crash >> out.txt 2>&1 || true
             echo "=== LOG ===" >> out.txt; (adb logcat -d | grep -iE "tasrif|AndroidRuntime|FATAL|chromium" | tail -120) >> out.txt 2>&1 || true
             adb exec-out screencap -p > shot.png
