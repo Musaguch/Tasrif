@@ -1,0 +1,98 @@
+Performing Streamed Install
+Success
+Starting: Intent { cmp=io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity }
+Status: ok
+LaunchState: COLD
+Activity: io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity
+TotalTime: 1880
+WaitTime: 1931
+Complete
+=== PID ===
+1889
+=== CRASH ===
+=== LOG ===
+10-15 19:30:39.509   561  1582 V SplashScreenExceptionList: SplashScreen checking exception for package io.github.musaguch.tasrif.beta (target sdk:35) -> false
+10-15 19:30:39.517   561  1582 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity} with LAUNCH_MULTIPLE from uid 2000 (BAL_ALLOW_PERMISSION) result code=0
+10-15 19:30:39.609  1889  1889 I uch.tasrif.beta: Using CollectorTypeCMC GC.
+10-15 19:30:39.611  1889  1889 W uch.tasrif.beta: Unexpected CPU variant for x86: x86_64.
+10-15 19:30:39.611  1889  1889 W uch.tasrif.beta: Known variants: atom, sandybridge, silvermont, goldmont, goldmont-plus, goldmont-without-sha-xsaves, tremont, kabylake, default
+10-15 19:30:39.613  1889  1889 E uch.tasrif.beta: Not starting debugger since process cannot load the jdwp agent.
+10-15 19:30:39.614   561   595 I ActivityManager: Start proc 1889:io.github.musaguch.tasrif.beta/u0a209 for next-top-activity {io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity}
+10-15 19:30:39.686  1889  1889 D nativeloader: Configuring clns-7 for other apk /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/lib/x86_64, permitted_path=/data:/mnt/expand:/data/user/0/io.github.musaguch.tasrif.beta
+10-15 19:30:39.773   561   992 D CoreBackPreview: Window{b01c2cd u0 Splash Screen io.github.musaguch.tasrif.beta}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@5f812f5, mPriority=0, mIsAnimationCallback=false}
+10-15 19:30:39.845  1336  1920 W chromium: [1015/193039.844984:WARNING:dns_config_service_android.cc(81)] Failed to read DnsConfig.
+10-15 19:30:40.022   561   585 I AppsFilter: interaction: PackageSetting{29c6a26 com.android.microdroid.empty_payload/10191} -> PackageSetting{454f667 io.github.musaguch.tasrif.beta/10209} BLOCKED
+10-15 19:30:40.037  1889  1889 V ActivityThread: getPackageInfo() caused update to cached ApplicationInfo for package io.github.musaguch.tasrif.beta
+10-15 19:30:40.111   561   582 V WindowManager:         {WCT{RemoteToken{63358a2 Task{12dd5bd #8 type=standard A=10209:io.github.musaguch.tasrif.beta}}} m=OPEN f=MOVE_TO_TOP leash=Surface(name=Task=8)/@0xa11f1fd sb=Rect(0, 0 - 320, 640) eb=Rect(0, 0 - 320, 640) d=0 taskParent=-1},
+10-15 19:30:40.144   561   584 E AppHibernationService: Package io.github.musaguch.tasrif.beta is not installed for user 0
+10-15 19:30:40.145   561   584 E AppHibernationService: Package io.github.musaguch.tasrif.beta is not installed for any user
+10-15 19:30:40.145   561   584 E AppHibernationService: Package io.github.musaguch.tasrif.beta is not installed for user 0
+10-15 19:30:40.146   561   584 E AppHibernationService: Package io.github.musaguch.tasrif.beta is not installed for any user
+10-15 19:30:40.163  1889  1889 W uch.tasrif.beta: Entry not found
+10-15 19:30:40.238  1889  1889 D nativeloader: Load /system/lib64/libwebviewchromium_plat_support.so using ns clns-9 from class loader (caller=/data/app/~~oWFsHxBjLEEJhzS6GQSwJw==/com.google.android.webview-OhU3cPeSIwvLXky2-xIgRQ==/WebViewGoogle.apk): ok
+10-15 19:30:40.362  1889  1959 I chromium: [1015/193040.356653:INFO:variations_seed_loader.cc(66)] Failed to open file for reading.: No such file or directory (2)
+10-15 19:30:40.363  1889  1959 I cr_VariationsUtils: Failed reading seed file "/data/user/0/io.github.musaguch.tasrif.beta/app_webview/variations_seed_new"
+10-15 19:30:40.363  1889  1959 I chromium: [INFO:variations_seed_loader.cc(66)] Failed to open file for reading.: No such file or directory (2)
+10-15 19:30:40.363  1889  1959 I cr_VariationsUtils: Failed reading seed file "/data/user/0/io.github.musaguch.tasrif.beta/app_webview/variations_seed"
+10-15 19:30:40.466   561   595 I ActivityManager: Start proc 1967:com.google.android.webview:webview_service/u0a151 for service {com.google.android.webview/org.chromium.android_webview.services.VariationsSeedServer}
+10-15 19:30:40.590  1889  1986 W chromium: [WARNING:dns_config_service_android.cc(81)] Failed to read DnsConfig.
+10-15 19:30:40.699   561   595 I ActivityManager: Start proc 1997:com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0/u0ai9000 for  {io.github.musaguch.tasrif.beta/org.chromium.content.app.SandboxedProcessService0:0}
+10-15 19:30:40.864  1997  1997 I cr_WebViewApkApp: Launched version=124.0.6367.219 minSdkVersion=29 isBundle=false processName=com.google.android.webview:sandboxed_process0:org.chromium.content.app.SandboxedProcessService0:0
+10-15 19:30:41.045   561  1240 D CoreBackPreview: Window{bbeac28 u0 io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@b4ad170, mPriority=0, mIsAnimationCallback=false}
+10-15 19:30:41.176  1997  2033 W chromium: [WARNING:runtime_features.cc(694)] SharedStorage for M118+ cannot be enabled in this configuration. Use --enable-features=SharedStorageAPI,SharedStorageAPIM118 in addition.
+10-15 19:30:41.178  1997  2033 W chromium: [WARNING:runtime_features.cc(730)] AttributionReportingCrossAppWeb cannot be enabled in this configuration. Use --enable-features=ConversionMeasurement,AttributionReportingCrossAppWeb in addition.
+10-15 19:30:41.187  1180  1180 I TopTaskTracker: onTaskMovedToFront: (moved taskInfo to front) taskId=8, baseIntent=Intent { flg=0x10000000 cmp=io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity }
+10-15 19:30:41.335   561   687 I ImeTracker: io.github.musaguch.tasrif.beta:3061a3a2: onRequestHide at ORIGIN_SERVER reason HIDE_UNSPECIFIED_WINDOW fromUser false
+10-15 19:30:41.337   561   687 I ImeTracker: io.github.musaguch.tasrif.beta:3061a3a2: onCancelled at PHASE_SERVER_SHOULD_HIDE
+10-15 19:30:41.372   561  1583 D CoreBackPreview: Window{b01c2cd u0 Splash Screen io.github.musaguch.tasrif.beta EXITING}: Setting back callback null
+10-15 19:30:41.377   561  1583 W InputManager-JNI: Input channel object 'b01c2cd Splash Screen io.github.musaguch.tasrif.beta (client)' was disposed without first being removed with the input manager!
+10-15 19:30:41.382  1336  1336 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=io.github.musaguch.tasrif.beta, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, false)
+10-15 19:30:41.386   561  1587 W PackageConfigPersister: App-specific configuration not found for packageName: io.github.musaguch.tasrif.beta and userId: 0
+10-15 19:30:41.423  1889  1889 I chromium: [INFO:CONSOLE(1)] "Uncaught TypeError: Cannot read properties of null (reading 'style')", source: chrome-error://chromewebdata/ (1)
+10-15 19:30:41.424  1889  1889 I chromium: [INFO:CONSOLE(1)] "Uncaught TypeError: Cannot read properties of null (reading 'style')", source: chrome-error://chromewebdata/ (1)
+10-15 19:30:41.424  1889  1889 I chromium: [INFO:CONSOLE(1)] "Uncaught TypeError: Cannot read properties of null (reading 'style')", source: chrome-error://chromewebdata/ (1)
+10-15 19:30:41.441   561   582 I ActivityTaskManager: Displayed io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity for user 0: +1s880ms
+10-15 19:30:41.775  1217  2069 W chromium: [1015/193041.696579:WARNING:dns_config_service_android.cc(81)] Failed to read DnsConfig.
+10-15 19:30:42.129  1217  1915 W FontLog : 	at org.chromium.net.impl.CronetUrlRequest.onError(:com.google.android.gms.dynamite_cronetdynamite@242335041@24.23.35 (190800-0):4)
+10-15 19:30:42.173  1217  1915 W FontLog : No resolver, short-circuit {Noto Color Emoji Compat, wdth 100.0, wght 400, ital 0.0, bestEffort false} for io.github.musaguch.tasrif.beta to failure [CONTEXT service_id=132 ]
+10-15 19:30:42.293  1086  1086 D CarrierSvcBindHelper: onPackageAdded: io.github.musaguch.tasrif.beta
+10-15 19:30:42.492   561   888 I SdkSandboxManager: No SDKs used. Skipping SDK data reconcilation for CallingInfo{mUid=10209, mPackageName='io.github.musaguch.tasrif.beta, mAppProcessToken='null'}
+10-15 19:30:42.495   561   859 I AppWidgetServiceImpl: Updating package stopped masked state for uid 10209 package io.github.musaguch.tasrif.beta isStopped false
+10-15 19:30:42.602   561   561 I AppsFilter: interaction: PackageSetting{29c6a26 com.android.microdroid.empty_payload/10191} -> PackageSetting{454f667 io.github.musaguch.tasrif.beta/10209} BLOCKED
+10-15 19:30:42.720  1086  1284 D ImsResolver: maybeAddedImsService, packageName: io.github.musaguch.tasrif.beta
+10-15 19:30:42.735   913   920 W ndroid.systemui: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:30:44.030   561   877 D ShortcutService: adding package: io.github.musaguch.tasrif.beta userId0
+10-15 19:30:44.030   561   877 D ShortcutService: handlePackageAdded: io.github.musaguch.tasrif.beta user=0
+10-15 19:30:44.030   561   877 D ShortcutService: rescanPackageIfNeeded 0@io.github.musaguch.tasrif.beta, forceRescan=true , isNewApp=true
+10-15 19:30:44.030   561   877 D ShortcutService: Package io.github.musaguch.tasrif.beta has 0 manifest shortcut(s), and 0 share target(s)
+10-15 19:30:45.017  1180  1230 I Launcher.IconCache: Database bulk icon loading failed, using fallback bulk icon loading for: ComponentInfo{io.github.musaguch.tasrif.beta/io.github.musaguch.tasrif.MainActivity}
+10-15 19:30:46.006  1086  1086 D CarrierSvcBindHelper: onPackageModified: io.github.musaguch.tasrif.beta
+10-15 19:30:46.113  1086  1284 D ImsResolver: maybeAddedImsService, packageName: io.github.musaguch.tasrif.beta
+10-15 19:30:46.289   561   877 D ShortcutService: changing package: io.github.musaguch.tasrif.beta userId0
+10-15 19:30:46.289   561   877 D ShortcutService: handlePackageChanged: io.github.musaguch.tasrif.beta user=0
+10-15 19:30:46.347   922   922 I SafetyLabelChangedBroadcastReceiver: received broadcast packageName: io.github.musaguch.tasrif.beta, current user: UserHandle{0}, packageChangeEvent: NEW_INSTALL, intent user: UserHandle{0}
+10-15 19:30:46.541  1463  1463 I AiAiEcho: AppFetcherImpl onPackageChanged io.github.musaguch.tasrif.beta.
+10-15 19:30:46.543   561   877 D ShortcutService: rescanPackageIfNeeded 0@io.github.musaguch.tasrif.beta, forceRescan=true , isNewApp=true
+10-15 19:30:46.544   561   877 D ShortcutService: Package io.github.musaguch.tasrif.beta has 0 manifest shortcut(s), and 0 share target(s)
+10-15 19:30:46.552  1463  2507 I AiAiEcho: AppIndexer Package:[io.github.musaguch.tasrif.beta] UserProfile:[0] Enabled:[true].
+10-15 19:30:46.555  1463  2507 I AiAiEcho: AppFetcherImplV2 updateApps package:[io.github.musaguch.tasrif.beta], userId:[0], reason:[package is updated.].
+10-15 19:30:46.794  1463  1469 W ogle.android.as: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:30:48.671  1180  1230 D PackageUpdatedTask: Package updated: mOp=ADD packages=[io.github.musaguch.tasrif.beta]
+10-15 19:30:49.262  1643  1972 I Blockstore: [DataStoreImpl] Clearing Blockstore Data for package io.github.musaguch.tasrif.beta [CONTEXT service_id=258 ]
+10-15 19:30:49.357  1180  1230 D PackageUpdatedTask: Package updated: mOp=UPDATE packages=[io.github.musaguch.tasrif.beta]
+10-15 19:30:49.666   561   595 I ActivityManager: Start proc 2684:com.google.android.webview:webview_apk/u0a151 for service {com.google.android.webview/org.chromium.android_webview.nonembedded.AwComponentUpdateService}
+10-15 19:30:49.729  1217  2158 I FontLog : Package io.github.musaguch.tasrif.beta has no metadata [CONTEXT service_id=132 ]
+10-15 19:30:49.953  1180  1189 W s.nexuslauncher: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:30:50.514   561   660 W JobServiceContext: Sending onNetworkChanged for a job that isn't started. JobStatus{a96a452 #u0a151/110 com.google.android.webview/org.chromium.android_webview.nonembedded.AwComponentUpdateService u=0 s=10151 NET READY}
+10-15 19:30:50.853  2684  2728 W cr_AWNetworkFetcherTask: 	at org.chromium.android_webview.nonembedded.NetworkFetcherTask.download(chromium-TrichromeWebViewGoogle6432.apk-stable-636771938:56)
+10-15 19:30:51.116  2723  2776 D nativeloader: Load /data/app/~~PIaCu2toMzDx_g99kmD_NA==/com.android.chrome-MFsXLzDKxYqz5ezqNkyftQ==/Chrome.apk!/lib/x86_64/libchromium_android_linker.so using ns clns-8 from class loader (caller=/data/app/~~PIaCu2toMzDx_g99kmD_NA==/com.android.chrome-MFsXLzDKxYqz5ezqNkyftQ==/Chrome.apk): ok
+10-15 19:30:51.154  1545  2756 W chromium: [1015/193051.154628:WARNING:url_request_context_config.cc(716)] Unrecognized Cronet experimental option "enable_telemetry" with params "false
+10-15 19:30:51.154  1545  2756 W chromium: 
+10-15 19:30:51.230  1336  1336 I GoogleInputMethodService: GoogleInputMethodService.onStartInput():1986 onStartInput(EditorInfo{EditorInfo{packageName=io.github.musaguch.tasrif.beta, inputType=0, inputTypeString=NULL, enableLearning=false, autoCorrection=false, autoComplete=false, imeOptions=0, privateImeOptions=null, actionName=UNSPECIFIED, actionLabel=null, initialSelStart=-1, initialSelEnd=-1, initialCapsMode=0, label=null, fieldId=0, fieldName=null, extras=null, hintText=null, hintLocales=[]}}, true)
+10-15 19:30:51.239   561   884 W PackageConfigPersister: App-specific configuration not found for packageName: io.github.musaguch.tasrif.beta and userId: 0
+10-15 19:30:53.082  1643  1661 W gle.android.gms: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:30:56.096  1643  1661 W gle.android.gms: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:30:57.868  1089  1106 W ndroid.settings: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:30:58.320  1889  1896 W uch.tasrif.beta: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~oWFsHxBjLEEJhzS6GQSwJw==/com.google.android.webview-OhU3cPeSIwvLXky2-xIgRQ==/WebViewGoogle.apk' with 2 weak references
+10-15 19:31:00.618  1379  1388 W .apps.wellbeing: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
+10-15 19:31:04.570  1643  1661 W gle.android.gms: ApkAssets: Deleting an ApkAssets object '<empty> and /data/app/~~HpdwLrTVlks1nKH4lIwBUA==/io.github.musaguch.tasrif.beta-onKtBV3bF9hgn65H0Peatw==/base.apk' with 1 weak references
