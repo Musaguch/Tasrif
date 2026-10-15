@@ -1,0 +1,90 @@
+Performing Streamed Install
+Success
+Starting: Intent { cmp=io.github.musaguch.tasrif/.MainActivity }
+Status: ok
+LaunchState: UNKNOWN (-1)
+Activity: com.google.android.apps.nexuslauncher/.NexusLauncherActivity
+WaitTime: 470
+Complete
+=== PID ===
+NOT RUNNING
+=== CRASH ===
+--------- beginning of crash
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: FATAL EXCEPTION: main
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: Process: io.github.musaguch.tasrif, PID: 3310
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3449)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3601)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2066)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:106)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:223)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7656)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:592)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at com.android.internal.policy.PhoneWindow.getInsetsController(PhoneWindow.java:3880)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.applyIconColors(MainActivity.java:83)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.onCreate(MainActivity.java:39)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:7994)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:7978)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1309)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3422)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	... 11 more
+=== LOG ===
+10-15 02:47:04.184   498   554 I PackageDexOptimizer: Running dexopt (dexoptNeeded=1) on: /data/app/~~0jBS0t_jLXtrA61x8xCsgQ==/io.github.musaguch.tasrif-KPT_xXASuFDTHLVYE2Hzzw==/base.apk pkg=io.github.musaguch.tasrif isa=x86_64 dexoptFlags=boot_complete,profile_guided,public,enable_hidden_api_checks targetFilter=speed-profile oatDir=/data/app/~~0jBS0t_jLXtrA61x8xCsgQ==/io.github.musaguch.tasrif-KPT_xXASuFDTHLVYE2Hzzw==/oat classLoaderContext=PCL[]{}
+10-15 02:47:04.187   425  1503 V installd: DexInv: --- BEGIN '/data/app/~~0jBS0t_jLXtrA61x8xCsgQ==/io.github.musaguch.tasrif-KPT_xXASuFDTHLVYE2Hzzw==/base.apk' ---
+10-15 02:47:05.265  3133  3133 I dex2oat32: /apex/com.android.art/bin/dex2oat32 --input-vdex-fd=-1 --output-vdex-fd=9 --updatable-bcp-packages-file=/system/etc/updatable-bcp-packages.txt --resolve-startup-const-strings=true --max-image-block-size=524288 --compiler-filter=speed-profile --classpath-dir=/data/app/~~0jBS0t_jLXtrA61x8xCsgQ==/io.github.musaguch.tasrif-KPT_xXASuFDTHLVYE2Hzzw== --class-loader-context=PCL[]{} --generate-mini-debug-info --compact-dex-level=none --compilation-reason=install
+10-15 02:47:06.258   425  1503 V installd: DexInv: --- END '/data/app/~~0jBS0t_jLXtrA61x8xCsgQ==/io.github.musaguch.tasrif-KPT_xXASuFDTHLVYE2Hzzw==/base.apk' (success) ---
+10-15 02:47:06.272   498   554 V BackupManagerService: [UserID:0] restoreAtInstall pkg=io.github.musaguch.tasrif token=1 restoreSet=0
+10-15 02:47:06.411  1819  1819 I MediaProvider: Invalidating LocalCallingIdentity cache for package io.github.musaguch.tasrif. Reason: package android.intent.action.PACKAGE_ADDED
+10-15 02:47:06.428  1538  1538 I GsaVoiceInteractionSrv: O received Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) }
+10-15 02:47:06.435   693   693 D AvrcpMediaPlayerList: Name of package changed: io.github.musaguch.tasrif
+10-15 02:47:06.452  1175  2297 W GCM     : Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+10-15 02:47:06.455  1175  2360 W GCM     : Unexpected forwarded intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 cmp=com.google.android.gms/.chimera.PersistentIntentOperationService (has extras) }
+10-15 02:47:06.573  1442  3084 I ChromeSync: [Sync,SyncIntentOperation] Handling the intent: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 cmp=com.google.android.gms/.chimera.GmsIntentOperationService (has extras) }.
+10-15 02:47:06.574  1442  2052 I FontsPackageChangeOp: Package io.github.musaguch.tasrif has no metadata
+10-15 02:47:06.667  1442  3084 I ChromeSync: [Persistence,AffiliationManager] One of affiliation or grouping data for android://a8XLW0PAWI6LiJDQzraosxymsiZFhlQC5SutXGVQG5oXktSTPAUxL0Z72ga6pNgobzXIQ0lGmes3aANLgzA44g==@io.github.musaguch.tasrif/ was not found. Marking affiliation data as stale...
+10-15 02:47:07.150   498  1897 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=io.github.musaguch.tasrif/.MainActivity} from uid 2000
+10-15 02:47:07.207   498   538 I ActivityManager: Start proc 3310:io.github.musaguch.tasrif/u0a167 for pre-top-activity {io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}
+10-15 02:47:07.267  3310  3310 D AndroidRuntime: Shutting down VM
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: FATAL EXCEPTION: main
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: Process: io.github.musaguch.tasrif, PID: 3310
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: java.lang.RuntimeException: Unable to start activity ComponentInfo{io.github.musaguch.tasrif/io.github.musaguch.tasrif.MainActivity}: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3449)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:3601)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:85)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.executeCallbacks(TransactionExecutor.java:135)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.servertransaction.TransactionExecutor.execute(TransactionExecutor.java:95)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:2066)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:106)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:223)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7656)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:592)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:947)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'android.view.WindowInsetsController com.android.internal.policy.DecorView.getWindowInsetsController()' on a null object reference
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at com.android.internal.policy.PhoneWindow.getInsetsController(PhoneWindow.java:3880)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.applyIconColors(MainActivity.java:83)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at io.github.musaguch.tasrif.MainActivity.onCreate(MainActivity.java:39)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:7994)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.Activity.performCreate(Activity.java:7978)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1309)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:3422)
+10-15 02:47:07.269  3310  3310 E AndroidRuntime: 	... 11 more
+10-15 02:47:07.270   498   572 W ActivityTaskManager:   Force finishing activity io.github.musaguch.tasrif/.MainActivity
+10-15 02:47:07.516   498  1909 I ActivityManager: Process io.github.musaguch.tasrif (pid 3310) has died: prcp TOP 
+10-15 02:47:07.771   498   531 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{36952fc u0 io.github.musaguch.tasrif/.MainActivity t-1 f}}
+10-15 02:47:08.633   498  1625 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) } to com.google.android.packageinstaller/com.android.packageinstaller.PackageInstalledReceiver
+10-15 02:47:08.633   498   537 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) } to com.google.android.gms/.games.chimera.GamesSystemBroadcastReceiverProxy
+10-15 02:47:08.633   498   537 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) } to com.google.android.gms/.gass.chimera.PackageChangeBroadcastReceiver
+10-15 02:47:08.633   498   537 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) } to com.google.android.gms/.chimera.GmsIntentOperationService$PersistentTrustedReceiver
+10-15 02:47:08.633   498   537 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) } to com.google.android.googlequicksearchbox/com.google.android.apps.gsa.googlequicksearchbox.GelStubAppWatcher
+10-15 02:47:08.633   498   537 W BroadcastQueue: Background execution not allowed: receiving Intent { act=android.intent.action.PACKAGE_ADDED dat=package:io.github.musaguch.tasrif flg=0x4000010 (has extras) } to com.google.android.ims/.receivers.RcsAutoStartReceiver
+10-15 02:47:09.817  1175  2301 I anhw    : Scheduling Phenotype for a PhenotypeSyncImmediately(6, org.chromium.net.cronet) one off with window [1, 2] in seconds [CONTEXT service_id=51 ]
+10-15 02:47:09.844  1679  3415 E ACS.ResponseHandler: #onFatalError: com.google.android.apps.gsa.shared.speech.b.o: errorCode: 13, engine: 2
+10-15 02:47:09.844  1679  3415 E ACS.ResponseHandler: com.google.android.apps.gsa.shared.util.b.e: ACS.ResponseHandler: #onFatalError: com.google.android.apps.gsa.shared.speech.b.o: errorCode: 13, engine: 2
+10-15 02:47:20.948   498   538 I ActivityManager: Start proc 4421:com.android.chrome/u0a131 for service {com.android.chrome/org.chromium.chrome.browser.customtabs.CustomTabsConnectionService}
